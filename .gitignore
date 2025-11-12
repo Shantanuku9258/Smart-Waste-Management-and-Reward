@@ -1,0 +1,7 @@
+node_modules/
+target/
+venv/
+.env
+uploads/
+.idea/
+*.log

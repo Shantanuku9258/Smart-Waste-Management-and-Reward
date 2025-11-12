@@ -1,0 +1,6 @@
+zone_id,waste_type,collected_weight_kg,collection_date
+1,PLASTIC,120.5,2025-10-01
+1,ORGANIC,80.2,2025-10-01
+2,PAPER,60.4,2025-10-01
+
+
