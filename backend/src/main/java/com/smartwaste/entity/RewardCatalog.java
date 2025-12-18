@@ -14,6 +14,11 @@ public class RewardCatalog {
 	@Lob
 	private String details;
 
+	/**
+	 * Simple availability flag for prototype catalog control.
+	 */
+	private Boolean active = Boolean.TRUE;
+
 	public Long getRewardId() { return rewardId; }
 	public void setRewardId(Long rewardId) { this.rewardId = rewardId; }
 	public String getRewardName() { return rewardName; }
@@ -22,6 +27,8 @@ public class RewardCatalog {
 	public void setPointsRequired(Integer pointsRequired) { this.pointsRequired = pointsRequired; }
 	public String getDetails() { return details; }
 	public void setDetails(String details) { this.details = details; }
+	public Boolean getActive() { return active; }
+	public void setActive(Boolean active) { this.active = active; }
 }
 
 

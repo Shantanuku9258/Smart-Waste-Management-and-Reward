@@ -57,12 +57,14 @@ CREATE TABLE IF NOT EXISTS waste_requests (
 CREATE TABLE IF NOT EXISTS reward_transactions (
   transaction_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT,
+  request_id BIGINT,
   points_added INT DEFAULT 0,
   points_spent INT DEFAULT 0,
   transaction_type ENUM('ADD','REDEEM'),
   description VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(user_id)
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (request_id) REFERENCES waste_requests(request_id)
 );
 
 -- 6. Reward Catalog
@@ -70,10 +72,24 @@ CREATE TABLE IF NOT EXISTS reward_catalog (
   reward_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   reward_name VARCHAR(255),
   points_required INT,
-  details TEXT
+  details TEXT,
+  active BOOLEAN DEFAULT TRUE
 );
 
--- 7. Waste Logs
+-- 7. Redemption Requests
+CREATE TABLE IF NOT EXISTS redemption_requests (
+  redemption_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  reward_id BIGINT NOT NULL,
+  points_used INT NOT NULL,
+  status ENUM('REQUESTED','FULFILLED') DEFAULT 'REQUESTED',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  fulfilled_at DATETIME,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (reward_id) REFERENCES reward_catalog(reward_id)
+);
+
+-- 8. Waste Logs
 CREATE TABLE IF NOT EXISTS waste_logs (
   log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   zone_id BIGINT,

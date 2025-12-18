@@ -1,5 +1,24 @@
-/* Smart Waste Management App Styles */
-#root {
-  width: 100%;
-  min-height: 100vh;
+/* Global styles - ensure images are constrained */
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent large images */
+img[src*="dustbin"],
+img[src*="lock"],
+img[src*="waste"] {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
 }

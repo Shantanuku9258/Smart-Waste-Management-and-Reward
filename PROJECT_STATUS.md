@@ -465,56 +465,49 @@ SmartWasteManagement/
 
 ---
 
-## ✅ Completed Phases
+## ✅ Completed Phases (Final Prototype Scope)
 
-1. ✅ **Phase 0** — Environment & Project Setup
-2. ✅ **Phase 1** — Database Design & Modeling
-3. ✅ **Phase 2** — Authentication & Authorization (JWT)
-4. ✅ **Phase 3** — Waste Request Management
+1. ✅ **Phase 0** — Environment & Project Setup  
+2. ✅ **Phase 1** — Database Design & Modeling  
+3. ✅ **Phase 2** — Authentication & Authorization (JWT)  
+4. ✅ **Phase 3** — Waste Request Management  
+5. ✅ **Phase 4** — Rewards & Points System (basic catalog + redemption)  
+6. ✅ **Phase 5** — Collector Dashboards (manual assignment & status updates)  
+7. ✅ **Phase 6** — Admin Analytics Dashboard (waste by zone/type, KPIs, reports)  
+8. ✅ **Phase 7** — ML Advisory Integration & Scope Freeze (zone predictions, eco‑scores, prediction vs actual analytics)
+
+The system is **functionally complete for a college prototype** and the scope is now **frozen**.
 
 ---
 
-## 🚀 Next Steps (Pending Phases)
+## 🚀 Future Scope (Not Implemented in This Prototype)
 
-### Phase 4 — Rewards & Points System
-- Reward catalog management
-- Points redemption
-- Wallet/balance display
-- Transaction history
+These items are intentionally left as **future enhancements** and are useful to mention in the viva as next steps:
 
-### Phase 5 — Collector Routing & Assignment
-- Automatic collector assignment by zone
-- Route optimization
-- Collector dashboard enhancements
-
-### Phase 6 — Admin Analytics Dashboard
-- Statistics and reports
-- User management
-- Request monitoring
-- Zone performance metrics
-
-### Phase 7 — ML Module Integration
-- Waste prediction models
-- Training scripts
-- Visualization dashboards
-- API integration with backend
-
-### Phase 8 — Notifications
-- Email notifications
-- SMS alerts (optional)
-- In-app notifications
-
-### Phase 9 — Security Hardening
-- Rate limiting
-- Input validation enhancements
-- Security headers
-- Audit logging
-
-### Phase 10 — Testing & CI/CD
-- Unit tests
-- Integration tests
-- CI/CD pipeline
-- Docker Compose deployment
+- **Government / Municipal Integration**
+  - Integration with official city/ULB systems
+  - Data sharing and policy dashboards
+- **Full Automation**
+  - Automatic collector assignment by zone and workload
+  - Automatic route planning based on predictions and live data
+  - Automatic status transitions driven by sensors/ML
+- **Advanced Route Optimization**
+  - Vehicle routing problem (VRP) algorithms
+  - Traffic‑aware and fuel‑efficient routes
+- **IoT‑Based Smart Bins**
+  - Fill‑level sensors and telemetry
+  - Real‑time bin health monitoring
+  - ML at the edge for anomaly detection
+- **Notifications & Payments**
+  - Email/SMS/in‑app notifications
+  - Online payment gateway integration and wallets
+- **Legal / Policy Enforcement**
+  - Fine/penalty calculation and challan workflows
+  - Evidence handling and dispute management
+- **Production Hardening**
+  - Comprehensive automated tests and CI/CD
+  - Advanced security hardening and observability
+  - Containerisation and cloud deployment
 
 ---
 

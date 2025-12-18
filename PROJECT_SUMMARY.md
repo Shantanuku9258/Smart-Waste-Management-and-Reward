@@ -1,6 +1,6 @@
 # Smart Waste Management System — Quick Summary
 
-## ✅ Completed: Phases 0-3
+## ✅ Completed: Phases 0-7 (Prototype Scope)
 
 ### Phase 0: Setup ✅
 - Spring Boot backend (port 8080)
@@ -28,7 +28,18 @@
 - Automatic reward points (10 × weight kg)
 - File storage for images and proof photos
 
-## 📊 Current Features
+### Phase 4–6: Rewards, Collector & Admin Dashboards ✅
+- Reward catalog and basic redemption workflow
+- User reward balance displayed in dashboards
+- Collector dashboard for assigned requests and status updates
+- Admin overview of requests, rewards and complaints
+
+### Phase 7: ML Advisory & Analytics ✅
+- Flask‑based ML service for simple waste prediction and eco‑score
+- Zone‑wise prediction vs actual comparison for **admins** (advisory only)
+- User eco‑score display as **feedback**, not as a control mechanism
+
+## 📊 Current Features (Final Prototype)
 
 **Users Can:**
 - Register/Login
@@ -47,12 +58,19 @@
 - Logs all transactions
 - Enforces security rules
 
-## 🚀 Next: Phase 4 — Rewards & Points System
+## 🚀 Future Scope (Beyond Prototype)
+
+High‑level ideas only (not implemented in this submission):
+- Automated collector assignment and ML‑driven route optimization
+- Integration with government/municipal systems
+- IoT‑enabled smart bins and sensor data ingestion
+- Legal enforcement workflows and fine management
 
 ---
 
 **Status:** ✅ Production-ready foundation complete  
 **Files:** See `PROJECT_STATUS.md` for full details
+
 
 
 

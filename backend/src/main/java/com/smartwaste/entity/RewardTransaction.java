@@ -15,6 +15,8 @@ public class RewardTransaction {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	private Long requestId; // Link to waste request for duplicate prevention
+
 	private Integer pointsAdded = 0;
 	private Integer pointsSpent = 0;
 	private String transactionType; // ADD, REDEEM
@@ -37,6 +39,8 @@ public class RewardTransaction {
 	public void setDescription(String description) { this.description = description; }
 	public LocalDateTime getCreatedAt() { return createdAt; }
 	public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+	public Long getRequestId() { return requestId; }
+	public void setRequestId(Long requestId) { this.requestId = requestId; }
 }
 
 

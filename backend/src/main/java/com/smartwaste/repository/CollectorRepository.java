@@ -7,5 +7,3 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CollectorRepository extends JpaRepository<Collector, Long> {
 	Optional<Collector> findByEmail(String email);
 }
-
-

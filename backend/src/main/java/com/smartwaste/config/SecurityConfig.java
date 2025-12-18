@@ -1,6 +1,7 @@
 package com.smartwaste.config;
 
 import com.smartwaste.security.JwtFilter;
+import com.smartwaste.security.SecurityHeadersFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,14 +23,16 @@ import java.util.Arrays;
 public class SecurityConfig {
 
 	private final JwtFilter jwtFilter;
+	private final SecurityHeadersFilter securityHeadersFilter;
 
-	public SecurityConfig(JwtFilter jwtFilter) {
+	public SecurityConfig(JwtFilter jwtFilter, SecurityHeadersFilter securityHeadersFilter) {
 		this.jwtFilter = jwtFilter;
+		this.securityHeadersFilter = securityHeadersFilter;
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder(12); // Increased rounds for better security
 	}
 
 	@Bean
@@ -41,9 +44,10 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L); // Cache preflight requests for 1 hour
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
@@ -51,19 +55,25 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable())
+		http
+			.csrf(csrf -> csrf.disable()) // Disabled for JWT stateless auth
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+			.headers(headers -> headers
+				.frameOptions(frame -> frame.deny())
+				.contentTypeOptions(contentType -> contentType.disable())
+			)
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/auth/**", "/api/health").permitAll()
+				.requestMatchers("/api/auth/**", "/api/health", "/actuator/health").permitAll()
 				.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 				.requestMatchers("/api/collector/**").hasAuthority("COLLECTOR")
 				.anyRequest().authenticated()
 			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+		// Add security headers filter before JWT filter
+		http.addFilterBefore(securityHeadersFilter, UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
 }
-
-
