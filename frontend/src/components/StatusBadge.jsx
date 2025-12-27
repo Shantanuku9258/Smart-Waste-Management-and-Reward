@@ -1,5 +1,13 @@
 export default function StatusBadge({ status }) {
   const statusConfig = {
+    UNASSIGNED: {
+      label: "Unassigned",
+      className: "bg-red-100 text-red-800 border-red-200",
+    },
+    ASSIGNED: {
+      label: "Assigned",
+      className: "bg-green-100 text-green-800 border-green-200",
+    },
     PENDING: {
       label: "Pending",
       className: "bg-yellow-100 text-yellow-800 border-yellow-200",

@@ -1,21 +1,23 @@
 import axiosInstance from "./axiosInstance";
 
-// Admin: get all waste requests
-export const getAllRequests = (token) =>
-  axiosInstance.get("/admin/requests", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+// Admin: get all waste requests (enriched with user, collector, zone info)
+// Token is automatically added by axiosInstance interceptor
+export const getAllRequests = () =>
+  axiosInstance.get("/admin/requests");
 
 // Admin: assign collector to a request
-export const assignCollector = (requestId, collectorId, token) =>
-  axiosInstance.put(`/admin/requests/${requestId}/assign?collectorId=${collectorId}`, null, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+// Token is automatically added by axiosInstance interceptor
+export const assignCollector = (requestId, collectorId) =>
+  axiosInstance.put(`/admin/requests/${requestId}/assign?collectorId=${collectorId}`, null);
 
 // Admin: list all collectors
-export const getAllCollectors = (token) =>
-  axiosInstance.get("/admin/collectors", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+// Token is automatically added by axiosInstance interceptor
+export const getAllCollectors = () =>
+  axiosInstance.get("/admin/collectors");
+
+// Admin: list all users
+// Token is automatically added by axiosInstance interceptor
+export const getAllUsers = () =>
+  axiosInstance.get("/admin/users");
 
 

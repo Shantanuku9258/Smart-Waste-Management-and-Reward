@@ -71,11 +71,11 @@ rf_model.fit(X_train_q, y_train_q)
 y_pred_q = rf_model.predict(X_test_q)
 mse = mean_squared_error(y_test_q, y_pred_q)
 rmse = np.sqrt(mse)
-print(f"  ✓ Model trained. RMSE: {rmse:.2f} kg")
+print(f"  [OK] Model trained. RMSE: {rmse:.2f} kg")
 
 # Save model
 joblib.dump(rf_model, 'models/waste_quantity_model.pkl')
-print("  ✓ Model saved: models/waste_quantity_model.pkl")
+print("  [OK] Model saved: models/waste_quantity_model.pkl")
 
 # ============================================================================
 # 2. WASTE TYPE CLASSIFICATION MODEL
@@ -127,13 +127,13 @@ lr_model.fit(X_train_c, y_train_c)
 # Evaluate
 y_pred_c = lr_model.predict(X_test_c)
 accuracy = accuracy_score(y_test_c, y_pred_c)
-print(f"  ✓ Model trained. Accuracy: {accuracy:.2%}")
+print(f"  [OK] Model trained. Accuracy: {accuracy:.2%}")
 
 # Save model and label encoder
 joblib.dump(lr_model, 'models/waste_classification_model.pkl')
 joblib.dump(label_encoder, 'models/waste_label_encoder.pkl')
-print("  ✓ Model saved: models/waste_classification_model.pkl")
-print("  ✓ Label encoder saved: models/waste_label_encoder.pkl")
+print("  [OK] Model saved: models/waste_classification_model.pkl")
+print("  [OK] Label encoder saved: models/waste_label_encoder.pkl")
 
 # ============================================================================
 # 3. USER ECO SCORE MODEL (Rule-based + ML)
@@ -194,7 +194,7 @@ eco_score_config = {
 }
 
 joblib.dump(eco_score_config, 'models/eco_score_config.pkl')
-print("  ✓ Eco score configuration saved: models/eco_score_config.pkl")
+print("  [OK] Eco score configuration saved: models/eco_score_config.pkl")
 
 print("\n" + "=" * 60)
 print("All models trained and saved successfully!")

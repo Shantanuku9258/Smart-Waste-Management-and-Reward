@@ -1,5 +1,6 @@
 package com.smartwaste.controller;
 
+import com.smartwaste.dto.AdminWasteRequestDTO;
 import com.smartwaste.entity.User;
 import com.smartwaste.entity.WasteRequest;
 import com.smartwaste.repository.UserRepository;
@@ -31,11 +32,11 @@ public class AdminRequestController {
 
 	/**
 	 * GET /api/admin/requests
-	 * Get all waste requests for admin monitoring/assignment.
+	 * Get all waste requests for admin monitoring/assignment with enriched data.
 	 */
 	@GetMapping
-	public ResponseEntity<List<WasteRequest>> getAll() {
-		return ResponseEntity.ok(wasteRequestService.getAllRequests());
+	public ResponseEntity<List<AdminWasteRequestDTO>> getAll() {
+		return ResponseEntity.ok(wasteRequestService.getAllRequestsEnriched());
 	}
 
 	@GetMapping("/delayed")
@@ -45,14 +46,15 @@ public class AdminRequestController {
 	}
 
 	@PutMapping("/{id}/assign")
-	public ResponseEntity<WasteRequest> reassign(
+	public ResponseEntity<AdminWasteRequestDTO> reassign(
 		@PathVariable Long id,
 		@RequestParam Long collectorId,
 		Principal principal
 	) {
 		User admin = requireAuthenticatedUser(principal);
 		WasteRequest updated = wasteRequestService.reassignCollector(id, collectorId, admin);
-		return ResponseEntity.ok(updated);
+		AdminWasteRequestDTO enriched = wasteRequestService.enrichRequest(updated);
+		return ResponseEntity.ok(enriched);
 	}
 
 	private User requireAuthenticatedUser(Principal principal) {

@@ -26,7 +26,12 @@ public class MyUserDetailsService implements UserDetailsService {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
+		// Add ROLE_ prefix for Spring Security hasRole() method compatibility
+		// This allows both hasRole("ADMIN") and hasAuthority("ROLE_ADMIN") to work
+		String role = user.getRole();
+		String authorityName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+		GrantedAuthority authority = new SimpleGrantedAuthority(authorityName);
+		
 		return new org.springframework.security.core.userdetails.User(
 			user.getEmail(),
 			user.getPasswordHash(),

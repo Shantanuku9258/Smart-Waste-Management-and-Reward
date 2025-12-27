@@ -41,14 +41,25 @@ export default function CollectorDashboard() {
   };
 
   const handleStatusUpdate = async (requestId, newStatus) => {
+    const statusLabels = {
+      IN_PROGRESS: "Started",
+      COLLECTED: "Collected",
+      REJECTED: "Rejected",
+    };
+    const statusLabel = statusLabels[newStatus] || newStatus;
+
     try {
       const token = localStorage.getItem("token");
       await updateRequestStatus(requestId, newStatus, token, null);
-      toast.success("Status updated successfully!");
+      toast.success(`Request #${requestId} marked as ${statusLabel} successfully!`);
       loadRequests();
     } catch (error) {
       console.error("Failed to update status:", error);
-      toast.error("Failed to update status");
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        `Failed to update status to ${statusLabel}. Please try again.`;
+      toast.error(message);
     }
   };
 

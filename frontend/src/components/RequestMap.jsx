@@ -27,7 +27,7 @@ function getCoords(request) {
 	return DEFAULT_COORD;
 }
 
-function createMarker(google, map, request) {
+function createMarker(google, map, request, isAdmin = false) {
 	const position = getCoords(request);
 	const marker = new google.maps.Marker({
 		position,
@@ -35,15 +35,27 @@ function createMarker(google, map, request) {
 		title: `Request #${request.requestId}`,
 	});
 
-	const info = new google.maps.InfoWindow({
-		content: `
-      <div style="font-size: 13px; line-height: 1.4;">
-        <div><strong>Request #${request.requestId}</strong></div>
-        ${request.wasteType ? `<div>Waste: ${request.wasteType}</div>` : ""}
-        ${request.zoneId ? `<div>Zone: ${request.zoneId}</div>` : ""}
-        ${request.pickupAddress ? `<div>Address: ${request.pickupAddress}</div>` : ""}
+	// Admin popup: Request ID, Waste Type, Zone, Address
+	// Collector popup: Request ID, Zone, Address
+	const infoContent = isAdmin
+		? `
+      <div style="font-size: 13px; line-height: 1.5; padding: 4px; min-width: 200px;">
+        <div style="font-weight: 600; margin-bottom: 6px; color: #111827;">Request #${request.requestId}</div>
+        ${request.wasteType ? `<div style="margin-bottom: 4px;"><strong>Waste Type:</strong> ${request.wasteType}</div>` : ""}
+        ${request.zoneName ? `<div style="margin-bottom: 4px;"><strong>Zone:</strong> ${request.zoneName}</div>` : request.zoneId ? `<div style="margin-bottom: 4px;"><strong>Zone:</strong> Zone ${request.zoneId}</div>` : ""}
+        ${request.pickupAddress ? `<div style="margin-top: 4px; color: #4B5563;"><strong>Address:</strong> ${request.pickupAddress}</div>` : ""}
       </div>
-    `,
+    `
+		: `
+      <div style="font-size: 13px; line-height: 1.5; padding: 4px; min-width: 200px;">
+        <div style="font-weight: 600; margin-bottom: 6px; color: #111827;">Request #${request.requestId}</div>
+        ${request.zoneName ? `<div style="margin-bottom: 4px;"><strong>Zone:</strong> ${request.zoneName}</div>` : request.zoneId ? `<div style="margin-bottom: 4px;"><strong>Zone:</strong> Zone ${request.zoneId}</div>` : ""}
+        ${request.pickupAddress ? `<div style="margin-top: 4px; color: #4B5563;"><strong>Address:</strong> ${request.pickupAddress}</div>` : ""}
+      </div>
+    `;
+
+	const info = new google.maps.InfoWindow({
+		content: infoContent,
 	});
 
 	marker.addListener("click", () => {
@@ -76,7 +88,7 @@ export function AdminRequestMap({ requests }) {
 				if (requests?.length) {
 					const bounds = new google.maps.LatLngBounds();
 					requests.forEach((req) => {
-						const marker = createMarker(google, mapInstance, req);
+						const marker = createMarker(google, mapInstance, req, true); // true = admin map
 						markers.push(marker);
 						bounds.extend(marker.getPosition());
 					});
@@ -101,19 +113,23 @@ export function AdminRequestMap({ requests }) {
 			<div className="p-4 border-b border-gray-200 flex items-center justify-between">
 				<div>
 					<h3 className="text-lg font-semibold text-gray-900">Waste Requests Map</h3>
-					<p className="text-sm text-gray-500">All requests (markers only, no routing)</p>
+					<p className="text-sm text-gray-500">Visualization of all waste pickup requests</p>
 				</div>
 			</div>
 			<div className="p-4">
-				<div
-					ref={mapRef}
-					className="w-full rounded-lg border border-gray-200"
-					style={{ height: 320, minHeight: 320 }}
-				/>
-				{error && (
-					<div className="mt-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
-						{error}
+				{error ? (
+					<div className="w-full rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center" style={{ height: 320, minHeight: 320 }}>
+						<div className="text-center">
+							<p className="text-sm font-medium text-gray-700">Map unavailable</p>
+							<p className="text-xs text-gray-500 mt-1">Google Maps failed to load</p>
+						</div>
 					</div>
+				) : (
+					<div
+						ref={mapRef}
+						className="w-full rounded-lg border border-gray-200"
+						style={{ height: 320, minHeight: 320 }}
+					/>
 				)}
 			</div>
 		</div>
@@ -145,7 +161,7 @@ export function CollectorRequestMap({ requests }) {
 					zoom: 10,
 				});
 
-				marker = createMarker(google, mapInstance, request);
+				marker = createMarker(google, mapInstance, request, false); // false = collector map
 			})
 			.catch((err) => {
 				console.error("Map load error:", err);
@@ -163,22 +179,29 @@ export function CollectorRequestMap({ requests }) {
 			<div className="p-4 border-b border-gray-200 flex items-center justify-between">
 				<div>
 					<h3 className="text-lg font-semibold text-gray-900">Assigned Pickup Map</h3>
-					<p className="text-sm text-gray-500">Your assigned request (marker only)</p>
+					<p className="text-sm text-gray-500">Visualization of your assigned request location</p>
 				</div>
 			</div>
 			<div className="p-4">
-				<div
-					ref={mapRef}
-					className="w-full rounded-lg border border-gray-200"
-					style={{ height: 280, minHeight: 280 }}
-				/>
-				{error && (
-					<div className="mt-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
-						{error}
+				{error ? (
+					<div className="w-full rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center" style={{ height: 280, minHeight: 280 }}>
+						<div className="text-center">
+							<p className="text-sm font-medium text-gray-700">Map unavailable</p>
+							<p className="text-xs text-gray-500 mt-1">Google Maps failed to load</p>
+						</div>
 					</div>
-				)}
-				{!request && (
-					<div className="mt-3 text-sm text-gray-500">No assigned requests to show.</div>
+				) : !request ? (
+					<div className="w-full rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center" style={{ height: 280, minHeight: 280 }}>
+						<div className="text-center">
+							<p className="text-sm text-gray-500">No assigned requests to show.</p>
+						</div>
+					</div>
+				) : (
+					<div
+						ref={mapRef}
+						className="w-full rounded-lg border border-gray-200"
+						style={{ height: 280, minHeight: 280 }}
+					/>
 				)}
 			</div>
 		</div>

@@ -25,16 +25,16 @@ def load_models():
     try:
         # Waste quantity prediction model
         models['quantity'] = joblib.load(os.path.join(MODELS_DIR, 'waste_quantity_model.pkl'))
-        print("✓ Loaded waste quantity prediction model")
+        print("[OK] Loaded waste quantity prediction model")
         
         # Waste classification model
         models['classification'] = joblib.load(os.path.join(MODELS_DIR, 'waste_classification_model.pkl'))
         models['label_encoder'] = joblib.load(os.path.join(MODELS_DIR, 'waste_label_encoder.pkl'))
-        print("✓ Loaded waste classification model")
+        print("[OK] Loaded waste classification model")
         
         # Eco score configuration
         models['eco_score_config'] = joblib.load(os.path.join(MODELS_DIR, 'eco_score_config.pkl'))
-        print("✓ Loaded eco score configuration")
+        print("[OK] Loaded eco score configuration")
         
         print("All models loaded successfully!")
         return True

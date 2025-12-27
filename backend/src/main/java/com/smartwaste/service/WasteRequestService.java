@@ -1,19 +1,23 @@
 package com.smartwaste.service;
 
+import com.smartwaste.dto.AdminWasteRequestDTO;
 import com.smartwaste.entity.Collector;
 import com.smartwaste.entity.RewardTransaction;
 import com.smartwaste.entity.User;
 import com.smartwaste.entity.WasteRequest;
 import com.smartwaste.entity.WasteRequestStatus;
+import com.smartwaste.entity.Zone;
 import com.smartwaste.repository.CollectorRepository;
 import com.smartwaste.repository.RewardTransactionRepository;
 import com.smartwaste.repository.UserRepository;
 import com.smartwaste.repository.WasteRequestRepository;
+import com.smartwaste.repository.ZoneRepository;
 import com.smartwaste.utils.FileUploadUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,17 +29,20 @@ public class WasteRequestService {
 	private final UserRepository userRepository;
 	private final RewardTransactionRepository rewardTransactionRepository;
 	private final CollectorRepository collectorRepository;
+	private final ZoneRepository zoneRepository;
 
 	public WasteRequestService(
 		WasteRequestRepository wasteRequestRepository,
 		UserRepository userRepository,
 		RewardTransactionRepository rewardTransactionRepository,
-		CollectorRepository collectorRepository
+		CollectorRepository collectorRepository,
+		ZoneRepository zoneRepository
 	) {
 		this.wasteRequestRepository = wasteRequestRepository;
 		this.userRepository = userRepository;
 		this.rewardTransactionRepository = rewardTransactionRepository;
 		this.collectorRepository = collectorRepository;
+		this.zoneRepository = zoneRepository;
 	}
 
 	public WasteRequest createRequest(
@@ -89,6 +96,69 @@ public class WasteRequestService {
 		return wasteRequestRepository.findAll();
 	}
 
+	/**
+	 * Admin-only: get all waste requests with enriched data (user, collector, zone info).
+	 */
+	public List<AdminWasteRequestDTO> getAllRequestsEnriched() {
+		return wasteRequestRepository.findAll().stream()
+			.map(this::enrichRequest)
+			.collect(Collectors.toList());
+	}
+
+	/**
+	 * Enrich a waste request with user, collector, and zone information.
+	 * Public method to allow controllers to enrich requests after updates.
+	 */
+	public AdminWasteRequestDTO enrichRequest(WasteRequest request) {
+		AdminWasteRequestDTO dto = new AdminWasteRequestDTO();
+		dto.setRequestId(request.getRequestId());
+		dto.setUserId(request.getUserId());
+		dto.setCollectorId(request.getCollectorId());
+		dto.setZoneId(request.getZoneId());
+		dto.setWasteType(request.getWasteType());
+		dto.setWeightKg(request.getWeightKg());
+		dto.setStatus(request.getStatus());
+		dto.setPickupAddress(request.getPickupAddress());
+		dto.setScheduledTime(request.getScheduledTime());
+		dto.setCollectedTime(request.getCollectedTime());
+		dto.setRewardPoints(request.getRewardPoints());
+		dto.setImageUrl(request.getImageUrl());
+		dto.setCollectorProofUrl(request.getCollectorProofUrl());
+		dto.setCreatedAt(request.getCreatedAt());
+
+		// Enrich with user information
+		if (request.getUserId() != null) {
+			userRepository.findById(request.getUserId()).ifPresent(user -> {
+				dto.setUserName(user.getName());
+				dto.setUserEmail(user.getEmail());
+			});
+		}
+
+		// Enrich with collector information
+		if (request.getCollectorId() != null) {
+			collectorRepository.findById(request.getCollectorId()).ifPresent(collector -> {
+				dto.setCollectorName(collector.getName());
+			});
+		}
+
+		// Enrich with zone information
+		if (request.getZoneId() != null) {
+			zoneRepository.findById(request.getZoneId()).ifPresent(zone -> {
+				dto.setZoneName(zone.getZoneName());
+			});
+		}
+
+		// Set display status: UNASSIGNED if no collector, ASSIGNED if collector exists
+		WasteRequestStatus status = WasteRequestStatus.fromString(request.getStatus());
+		if (request.getCollectorId() == null || status == WasteRequestStatus.CREATED) {
+			dto.setDisplayStatus("UNASSIGNED");
+		} else {
+			dto.setDisplayStatus("ASSIGNED");
+		}
+
+		return dto;
+	}
+
 	public List<WasteRequest> getRequestsForCollector(Long collectorId) {
 		return wasteRequestRepository.findByCollectorId(collectorId);
 	}
@@ -109,12 +179,13 @@ public class WasteRequestService {
 	}
 
 	/**
-	 * Admin-only: reassign a collector for a request. Collector must exist.
+	 * Admin-only: assign or reassign a collector for a request. Collector must exist.
+	 * Only allows assignment of UNASSIGNED requests (status CREATED or no collector assigned).
 	 * Does not allow status changes to COLLECTED/CLOSED.
 	 */
 	public WasteRequest reassignCollector(Long requestId, Long newCollectorId, User actingUser) {
 		if (!"ADMIN".equals(actingUser.getRole())) {
-			throw new AccessDeniedException("Only admins can reassign collectors");
+			throw new AccessDeniedException("Only admins can assign collectors");
 		}
 
 		WasteRequest request = wasteRequestRepository.findById(requestId)
@@ -128,13 +199,24 @@ public class WasteRequestService {
 			.orElseThrow(() -> new IllegalArgumentException("Collector not found: " + newCollectorId));
 
 		WasteRequestStatus status = WasteRequestStatus.fromString(request.getStatus());
+		
+		// Prevent assignment of completed/closed requests
 		if (status == WasteRequestStatus.COLLECTED || status == WasteRequestStatus.CLOSED) {
-			throw new IllegalArgumentException("Cannot reassign a completed/closed request");
+			throw new IllegalArgumentException("Cannot assign a completed/closed request");
+		}
+
+		// Only allow assignment if request is UNASSIGNED (no collector or status is CREATED)
+		// Allow reassignment if already ASSIGNED but not yet IN_PROGRESS
+		boolean isUnassigned = request.getCollectorId() == null || status == WasteRequestStatus.CREATED;
+		boolean isAssignedButNotStarted = status == WasteRequestStatus.ASSIGNED;
+		
+		if (!isUnassigned && !isAssignedButNotStarted) {
+			throw new IllegalArgumentException("Can only assign UNASSIGNED requests or reassign ASSIGNED requests that haven't started");
 		}
 
 		request.setCollectorId(newCollectorId);
 
-		// If request was still in CREATED, consider it ASSIGNED logically (legacy PENDING string)
+		// If request was still in CREATED (UNASSIGNED), set status to ASSIGNED
 		if (status == WasteRequestStatus.CREATED) {
 			request.setStatus(WasteRequestStatus.ASSIGNED.toLegacyString());
 		}

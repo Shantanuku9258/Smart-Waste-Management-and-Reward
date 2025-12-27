@@ -64,8 +64,8 @@ public class SecurityConfig {
 			)
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/auth/**", "/api/health", "/actuator/health").permitAll()
-				.requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-				.requestMatchers("/api/collector/**").hasAuthority("COLLECTOR")
+				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.requestMatchers("/api/collector/**").hasRole("COLLECTOR")
 				.anyRequest().authenticated()
 			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
