@@ -111,10 +111,13 @@ export default function AnalyticsDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header with Filters */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-bold text-gray-800">Analytics Dashboard</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 card-enter">
+        <div>
+          <h1 className="text-heading-1 text-gray-900 mb-2">Analytics Dashboard</h1>
+          <p className="text-gray-600 text-base font-medium">Comprehensive insights and metrics</p>
+        </div>
         
         <div className="flex flex-wrap gap-4">
           <div className="flex gap-2 items-center">
@@ -137,7 +140,7 @@ export default function AnalyticsDashboard() {
           </div>
           <button
             onClick={loadData}
-            className="px-4 py-2 bg-emerald-600 text-white rounded text-sm font-semibold hover:bg-emerald-700"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-sm font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
           >
             Refresh
           </button>
@@ -145,33 +148,35 @@ export default function AnalyticsDashboard() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded text-red-700">
+        <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl text-red-700 shadow-md card-enter">
           {error}
         </div>
       )}
 
       {/* KPI Cards */}
-      {overview && <KPICards overview={overview} />}
+      <div className="card-enter" style={{ animationDelay: '0.1s' }}>
+        {overview && <KPICards overview={overview} />}
+      </div>
 
       {/* Report Download Buttons */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-3 flex-wrap card-enter" style={{ animationDelay: '0.2s' }}>
         <button
           onClick={() => handleDownloadReport("waste")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-md"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
         >
           <ArrowDownTrayIcon className="h-4 w-4" />
           Download Waste Report
         </button>
         <button
           onClick={() => handleDownloadReport("users")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-md"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
         >
           <ArrowDownTrayIcon className="h-4 w-4" />
           Download Users Report
         </button>
         <button
           onClick={() => handleDownloadReport("collectors")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-md"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
         >
           <ArrowDownTrayIcon className="h-4 w-4" />
           Download Collectors Report
@@ -179,16 +184,18 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 card-enter" style={{ animationDelay: '0.3s' }}>
         <WasteByZoneChart data={wasteByZone} loading={loading} />
         <WasteByTypeChart data={wasteByType} loading={loading} />
       </div>
 
       {/* Prediction vs Actual */}
-      <PredictionVsActualChart data={predictionVsActual} loading={loading} />
+      <div className="card-enter" style={{ animationDelay: '0.4s' }}>
+        <PredictionVsActualChart data={predictionVsActual} loading={loading} />
+      </div>
 
       {/* Tables */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 card-enter" style={{ animationDelay: '0.5s' }}>
         <CollectorPerformanceTable data={collectorPerformance} loading={loading} />
         <TopEcoUsersTable data={topEcoUsers} loading={loading} />
       </div>

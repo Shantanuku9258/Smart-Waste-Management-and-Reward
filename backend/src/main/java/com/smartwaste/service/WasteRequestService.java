@@ -277,28 +277,50 @@ public class WasteRequestService {
 			return;
 		}
 
-		// Calculate points based on waste type multiplier
+		// Calculate points based on waste type multiplier (for USER)
 		int pointsAwarded = calculatePoints(request.getWasteType());
 		request.setRewardPoints(pointsAwarded);
 
-		if (pointsAwarded <= 0) {
-			return;
+		// Award points to USER
+		if (pointsAwarded > 0) {
+			User user = userRepository.findById(request.getUserId())
+				.orElseThrow(() -> new IllegalArgumentException("User not found: " + request.getUserId()));
+
+			user.setPoints(user.getPoints() + pointsAwarded);
+			userRepository.save(user);
+
+			RewardTransaction transaction = new RewardTransaction();
+			transaction.setUser(user);
+			transaction.setRequestId(request.getRequestId());
+			transaction.setPointsAdded(pointsAwarded);
+			transaction.setPointsSpent(0);
+			transaction.setTransactionType("ADD");
+			transaction.setDescription("Waste request #" + request.getRequestId() + " (" + request.getWasteType() + ") collected - " + pointsAwarded + " points");
+			rewardTransactionRepository.save(transaction);
 		}
 
-		User user = userRepository.findById(request.getUserId())
-			.orElseThrow(() -> new IllegalArgumentException("User not found: " + request.getUserId()));
+		// Calculate and award earnings to COLLECTOR
+		if (request.getCollectorId() != null) {
+			double earnings = calculateCollectorEarnings(request.getWeightKg());
+			Collector collector = collectorRepository.findById(request.getCollectorId())
+				.orElseThrow(() -> new IllegalArgumentException("Collector not found: " + request.getCollectorId()));
 
-		user.setPoints(user.getPoints() + pointsAwarded);
-		userRepository.save(user);
+			double currentEarnings = collector.getTotalEarnings() != null ? collector.getTotalEarnings() : 0.0;
+			collector.setTotalEarnings(currentEarnings + earnings);
+			collectorRepository.save(collector);
+		}
+	}
 
-		RewardTransaction transaction = new RewardTransaction();
-		transaction.setUser(user);
-		transaction.setRequestId(request.getRequestId());
-		transaction.setPointsAdded(pointsAwarded);
-		transaction.setPointsSpent(0);
-		transaction.setTransactionType("ADD");
-		transaction.setDescription("Waste request #" + request.getRequestId() + " (" + request.getWasteType() + ") collected - " + pointsAwarded + " points");
-		rewardTransactionRepository.save(transaction);
+	/**
+	 * Calculate collector earnings based on weight.
+	 * Fixed rate: ₹5 per kg
+	 */
+	private double calculateCollectorEarnings(double weightKg) {
+		if (weightKg <= 0) {
+			return 0.0;
+		}
+		double ratePerKg = 5.0; // ₹5 per kg
+		return weightKg * ratePerKg;
 	}
 
 	/**

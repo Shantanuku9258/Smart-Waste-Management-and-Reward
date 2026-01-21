@@ -20,6 +20,9 @@ public class Collector {
 
 	private Boolean isActive = Boolean.TRUE;
 
+	@Column(name = "total_earnings", nullable = false)
+	private Double totalEarnings = 0.0;
+
 	public Long getCollectorId() { return collectorId; }
 	public void setCollectorId(Long collectorId) { this.collectorId = collectorId; }
 	public String getName() { return name; }
@@ -34,6 +37,8 @@ public class Collector {
 	public void setZone(Zone zone) { this.zone = zone; }
 	public Boolean getIsActive() { return isActive; }
 	public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+	public Double getTotalEarnings() { return totalEarnings; }
+	public void setTotalEarnings(Double totalEarnings) { this.totalEarnings = totalEarnings; }
 }
 
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -137,6 +138,22 @@ public class GlobalExceptionHandler {
 		response.put("path", request.getDescription(false).replace("uri=", ""));
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	}
+
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<Map<String, Object>> handleMaxUploadSizeExceededException(
+		MaxUploadSizeExceededException ex, WebRequest request
+	) {
+		logger.warn("File upload size exceeded: {}", ex.getMessage());
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("timestamp", LocalDateTime.now());
+		response.put("status", HttpStatus.PAYLOAD_TOO_LARGE.value());
+		response.put("error", "Payload Too Large");
+		response.put("message", "The uploaded file exceeds the maximum allowed size of 10MB");
+		response.put("path", request.getDescription(false).replace("uri=", ""));
+
+		return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(response);
 	}
 
 	@ExceptionHandler(RuntimeException.class)

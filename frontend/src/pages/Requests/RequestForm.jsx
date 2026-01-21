@@ -113,8 +113,8 @@ export default function RequestForm({ userId, token, onCreated }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Zone ID
@@ -126,7 +126,7 @@ export default function RequestForm({ userId, token, onCreated }) {
             value={form.zoneId}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 outline-none hover:border-emerald-300"
             placeholder="Enter zone ID"
           />
         </div>
@@ -139,7 +139,7 @@ export default function RequestForm({ userId, token, onCreated }) {
             name="wasteType"
             value={form.wasteType}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 outline-none hover:border-emerald-300"
           >
             {WASTE_TYPES.map((type) => (
               <option key={type} value={type}>
@@ -188,7 +188,7 @@ export default function RequestForm({ userId, token, onCreated }) {
               onBlur={handleAutoClassify}
               required
               rows={3}
-              className="flex-1 pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none"
+              className="flex-1 pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 outline-none hover:border-emerald-300"
               placeholder="Enter address and describe your waste..."
             />
             <button
@@ -226,7 +226,7 @@ export default function RequestForm({ userId, token, onCreated }) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:scale-[1.02] glow-hover flex items-center justify-center gap-2"
       >
         {submitting ? (
           <>

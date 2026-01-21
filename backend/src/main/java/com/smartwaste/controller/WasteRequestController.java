@@ -109,6 +109,17 @@ public class WasteRequestController {
 		return ResponseEntity.ok(wasteRequestService.getRequestsForCollector(collectorId));
 	}
 
+	@GetMapping("/collector/profile")
+	public ResponseEntity<Collector> getMyCollectorProfile(Principal principal) {
+		User currentUser = requireAuthenticatedUser(principal);
+		if (!"COLLECTOR".equals(currentUser.getRole())) {
+			throw new AccessDeniedException("Access denied");
+		}
+		Collector collector = collectorRepository.findByEmail(currentUser.getEmail())
+			.orElseThrow(() -> new AccessDeniedException("Collector profile not found"));
+		return ResponseEntity.ok(collector);
+	}
+
 	@PutMapping(value = "/updateStatus/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<WasteRequest> updateStatusWithProof(
 		@PathVariable Long id,

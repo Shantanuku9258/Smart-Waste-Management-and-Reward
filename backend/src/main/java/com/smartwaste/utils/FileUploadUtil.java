@@ -21,7 +21,8 @@ public final class FileUploadUtil {
 		String cleanFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 		File destination = new File(dir, cleanFileName);
 		file.transferTo(destination);
-		return destination.getAbsolutePath();
+		// Return relative path for serving as static resource (e.g., "uploads/user/filename.jpg")
+		return uploadDir.replace("\\", "/") + "/" + cleanFileName;
 	}
 }
 

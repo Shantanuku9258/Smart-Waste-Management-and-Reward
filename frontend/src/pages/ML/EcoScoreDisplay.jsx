@@ -54,7 +54,7 @@ export default function EcoScoreDisplay({ userId, token }) {
 
   if (loading && !ecoScore) {
     return (
-      <div className="rounded border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 shadow-lg">
         <div className="text-center py-4">Loading eco score...</div>
       </div>
     );
@@ -62,8 +62,8 @@ export default function EcoScoreDisplay({ userId, token }) {
 
   if (error && !ecoScore) {
     return (
-      <div className="rounded border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="text-yellow-800 text-sm bg-yellow-50 border border-yellow-200 rounded p-3">
+      <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 shadow-lg">
+        <div className="text-yellow-800 text-sm bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-4">
           <p className="font-semibold">ML advisory service notice</p>
           <p>{error}</p>
         </div>
@@ -90,23 +90,26 @@ export default function EcoScoreDisplay({ userId, token }) {
   };
 
   return (
-    <div className="rounded border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 shadow-lg hover-lift">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">Eco Score</h2>
+        <div>
+          <h2 className="text-heading-3 text-gray-900">Eco Score</h2>
+          <p className="text-sm text-gray-500 mt-1">Your sustainability rating</p>
+        </div>
         <button
           onClick={handleRecalculate}
           disabled={loading}
-          className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 disabled:opacity-50"
+          className="px-3 py-1.5 text-sm bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl hover:from-gray-200 hover:to-gray-300 disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 font-semibold"
         >
           {loading ? "Updating..." : "Refresh"}
         </button>
       </div>
 
-      <div className={`${scoreBgColor()} border-2 rounded-lg p-6 text-center mb-4`}>
-        <div className={`text-5xl font-bold ${scoreColor()} mb-2`}>
+      <div className={`${scoreBgColor()} border-2 rounded-2xl p-6 text-center mb-4 shadow-md`}>
+        <div className={`text-6xl font-bold ${scoreColor()} mb-2 number-animate`}>
           {ecoScore.ecoScore}
         </div>
-        <div className="text-sm text-gray-600">out of 100</div>
+        <div className="text-sm font-medium text-gray-600">out of 100</div>
       </div>
 
       {ecoScore.activityScore !== null && (

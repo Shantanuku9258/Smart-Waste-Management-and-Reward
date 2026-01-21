@@ -109,25 +109,27 @@ export function AdminRequestMap({ requests }) {
 	}, [requests]);
 
 	return (
-		<div className="border border-gray-200 rounded-lg bg-white shadow-sm">
-			<div className="p-4 border-b border-gray-200 flex items-center justify-between">
+		<div className="border border-white/50 rounded-2xl bg-white/90 backdrop-blur-sm shadow-lg hover-lift">
+			<div className="p-5 border-b border-gray-200/50 flex items-center justify-between bg-gradient-to-r from-emerald-50/50 to-teal-50/50 rounded-t-2xl">
 				<div>
-					<h3 className="text-lg font-semibold text-gray-900">Waste Requests Map</h3>
-					<p className="text-sm text-gray-500">Visualization of all waste pickup requests</p>
+					<h3 className="text-lg font-bold text-gray-900">Waste Requests Map</h3>
+					<p className="text-sm text-gray-600 mt-1">Visualization of all waste pickup requests</p>
+					<p className="text-xs text-emerald-600 font-medium mt-1 italic">Live Map Integration (Demo Mode)</p>
 				</div>
 			</div>
 			<div className="p-4">
 				{error ? (
-					<div className="w-full rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center" style={{ height: 320, minHeight: 320 }}>
-						<div className="text-center">
+					<div className="w-full rounded-xl border border-gray-200/50 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-inner" style={{ height: 320, minHeight: 320 }}>
+						<div className="text-center p-6">
 							<p className="text-sm font-medium text-gray-700">Map unavailable</p>
 							<p className="text-xs text-gray-500 mt-1">Google Maps failed to load</p>
+							<p className="text-xs text-emerald-600 mt-2 font-medium italic">Demo Mode</p>
 						</div>
 					</div>
 				) : (
 					<div
 						ref={mapRef}
-						className="w-full rounded-lg border border-gray-200"
+						className="w-full rounded-xl border border-gray-200/50 shadow-inner overflow-hidden bg-white"
 						style={{ height: 320, minHeight: 320 }}
 					/>
 				)}
@@ -138,7 +140,7 @@ export function AdminRequestMap({ requests }) {
 
 export function CollectorRequestMap({ requests }) {
 	const mapRef = useRef(null);
-	const [error, setError] = useState(null);
+	const [isLoading, setIsLoading] = useState(true);
 
 	// Only show first assigned request marker
 	const request = requests?.[0];
@@ -148,24 +150,56 @@ export function CollectorRequestMap({ requests }) {
 		let marker;
 		let cancelled = false;
 
-		if (!request) return;
+		if (!request) {
+			setIsLoading(false);
+			return;
+		}
+
+		setIsLoading(true);
 
 		loadGoogleMaps()
 			.then((google) => {
 				if (cancelled) return;
 				if (!mapRef.current) return;
 
-				const center = getCoords(request);
-				mapInstance = new google.maps.Map(mapRef.current, {
-					center,
-					zoom: 10,
-				});
+				// Stop loading state immediately - render map container
+				setIsLoading(false);
 
-				marker = createMarker(google, mapInstance, request, false); // false = collector map
+				// Try to initialize map, but don't block if it fails
+				// Google Maps will show its own warnings if there are API issues
+				if (google && google.maps && google.maps.Map) {
+					try {
+						const center = getCoords(request);
+						mapInstance = new google.maps.Map(mapRef.current, {
+							center,
+							zoom: 10,
+							mapTypeControl: true,
+							streetViewControl: true,
+							fullscreenControl: true,
+						});
+
+						marker = createMarker(google, mapInstance, request, false); // false = collector map
+						
+						// Ensure map is visible
+						setTimeout(() => {
+							if (mapInstance && !cancelled && google.maps) {
+								google.maps.event.trigger(mapInstance, 'resize');
+							}
+						}, 100);
+					} catch (mapError) {
+						console.error("Map initialization error:", mapError);
+						// Don't set error - let Google Maps show its own warnings
+					}
+				} else {
+					// Google Maps API not available, but container is rendered
+					// Google will show its own warning popup if script loaded but API failed
+					console.warn("Google Maps API not fully initialized, but map container is rendered");
+				}
 			})
 			.catch((err) => {
 				console.error("Map load error:", err);
-				setError("Map unavailable");
+				// Stop loading even on error - render container anyway
+				setIsLoading(false);
 			});
 
 		return () => {
@@ -175,31 +209,37 @@ export function CollectorRequestMap({ requests }) {
 	}, [request]);
 
 	return (
-		<div className="border border-gray-200 rounded-lg bg-white shadow-sm">
-			<div className="p-4 border-b border-gray-200 flex items-center justify-between">
+		<div className="border border-white/50 rounded-2xl bg-white/90 backdrop-blur-sm shadow-lg hover-lift">
+			<div className="p-5 border-b border-gray-200/50 flex items-center justify-between bg-gradient-to-r from-emerald-50/50 to-teal-50/50 rounded-t-2xl">
 				<div>
-					<h3 className="text-lg font-semibold text-gray-900">Assigned Pickup Map</h3>
-					<p className="text-sm text-gray-500">Visualization of your assigned request location</p>
+					<h3 className="text-lg font-bold text-gray-900">Assigned Pickup Map</h3>
+					<p className="text-sm text-gray-600 mt-1">Visualization of your assigned request location</p>
+					<p className="text-xs text-emerald-600 font-medium mt-1 italic">Live Map Integration (Demo Mode)</p>
 				</div>
 			</div>
 			<div className="p-4">
-				{error ? (
-					<div className="w-full rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center" style={{ height: 280, minHeight: 280 }}>
-						<div className="text-center">
-							<p className="text-sm font-medium text-gray-700">Map unavailable</p>
-							<p className="text-xs text-gray-500 mt-1">Google Maps failed to load</p>
+				{!request ? (
+					<div className="w-full rounded-xl border border-gray-200/50 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-inner" style={{ height: 280, minHeight: 280 }}>
+						<div className="text-center p-6">
+							<p className="text-sm text-gray-500">No assigned requests to show.</p>
+							<p className="text-xs text-emerald-600 mt-2 font-medium italic">Map Integration Preview</p>
 						</div>
 					</div>
-				) : !request ? (
-					<div className="w-full rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center" style={{ height: 280, minHeight: 280 }}>
-						<div className="text-center">
-							<p className="text-sm text-gray-500">No assigned requests to show.</p>
+				) : isLoading ? (
+					<div className="w-full rounded-xl border border-gray-200/50 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-inner" style={{ height: 280, minHeight: 280 }}>
+						<div className="text-center p-6">
+							<svg className="animate-spin h-6 w-6 text-emerald-600 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+								<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+							<p className="text-xs text-gray-500">Loading map...</p>
+							<p className="text-xs text-emerald-600 mt-1 font-medium italic">Map Integration Preview</p>
 						</div>
 					</div>
 				) : (
 					<div
 						ref={mapRef}
-						className="w-full rounded-lg border border-gray-200"
+						className="w-full rounded-xl border border-gray-200/50 shadow-inner overflow-hidden"
 						style={{ height: 280, minHeight: 280 }}
 					/>
 				)}

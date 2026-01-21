@@ -151,16 +151,16 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between card-enter">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-1">Welcome back, {user?.name}</p>
+          <h1 className="text-heading-1 text-gray-900 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600 text-base font-medium">Welcome back, <span className="font-bold text-emerald-700">{user?.name}</span></p>
         </div>
         <button
           onClick={loadDashboardData}
-          className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+          className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 glow-hover font-semibold"
         >
           <ChartBarIcon className="h-5 w-5" />
           Refresh
@@ -180,13 +180,17 @@ export default function AdminDashboard() {
       <AdminRequestMap requests={requests} />
 
       {/* Top Users */}
-      <TopEcoUsersTable data={topUsers} loading={loading} />
+      <div className="card-enter" style={{ animationDelay: '0.4s' }}>
+        <TopEcoUsersTable data={topUsers} loading={loading} />
+      </div>
 
       {/* Reward Redemptions */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Reward Redemptions</h2>
-          <p className="text-sm text-gray-500">Manage user reward claims</p>
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg hover-lift card-enter" style={{ animationDelay: '0.4s' }}>
+        <div className="p-6 border-b border-gray-200/50 flex items-center justify-between bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-t-2xl">
+          <div>
+            <h2 className="text-heading-3 text-gray-900">Reward Redemptions</h2>
+            <p className="text-sm text-gray-500 mt-1">Manage user reward claims</p>
+          </div>
         </div>
         <div className="p-6 space-y-3">
           {redemptions.length === 0 ? (
@@ -195,7 +199,7 @@ export default function AdminDashboard() {
             redemptions.map((item) => (
               <div
                 key={item.redemptionId}
-                className="border border-gray-200 rounded-lg p-4 flex items-center justify-between gap-3"
+                className="border border-gray-200/50 rounded-xl p-4 flex items-center justify-between gap-3 hover:shadow-md hover-lift transition-all duration-200 bg-white/50"
               >
                 <div>
                   <p className="font-semibold text-gray-900">{item.rewardName}</p>
@@ -221,7 +225,7 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => handleFulfill(item.redemptionId)}
                       disabled={fulfillingId === item.redemptionId}
-                      className="mt-2 px-3 py-1 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="mt-2 px-3 py-1 text-xs font-semibold rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
                     >
                       {fulfillingId === item.redemptionId ? "Updating..." : "Mark Fulfilled"}
                     </button>
@@ -234,10 +238,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* Complaints */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">User Complaints</h2>
-          <p className="text-sm text-gray-500">Monitor delayed/pending issues</p>
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg hover-lift card-enter" style={{ animationDelay: '0.5s' }}>
+        <div className="p-6 border-b border-gray-200/50 flex items-center justify-between bg-gradient-to-r from-amber-50/50 to-orange-50/50 rounded-t-2xl">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">User Complaints</h2>
+            <p className="text-sm text-gray-500 mt-1">Monitor delayed/pending issues</p>
+          </div>
         </div>
         <div className="p-6 space-y-3">
           {complaints.length === 0 ? (
@@ -246,7 +252,7 @@ export default function AdminDashboard() {
             complaints.map((item) => (
               <div
                 key={item.complaintId}
-                className="border border-gray-200 rounded-lg p-4 flex items-center justify-between gap-3"
+                className="border border-gray-200/50 rounded-xl p-4 flex items-center justify-between gap-3 hover:shadow-md hover-lift transition-all duration-200 bg-white/50"
               >
                 <div>
                   <p className="font-semibold text-gray-900">Request #{item.request?.requestId}</p>
@@ -268,10 +274,12 @@ export default function AdminDashboard() {
       </div>
 
       {/* All Users Section */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">All Registered Users</h2>
-          <p className="text-sm text-gray-500 mt-1">View all users in the system</p>
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg hover-lift card-enter" style={{ animationDelay: '0.6s' }}>
+        <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-t-2xl">
+          <div>
+            <h2 className="text-heading-3 text-gray-900">All Registered Users</h2>
+            <p className="text-sm text-gray-500 mt-1">View all users in the system</p>
+          </div>
         </div>
         <div className="p-6 overflow-x-auto">
           {users.length === 0 ? (
@@ -318,7 +326,7 @@ export default function AdminDashboard() {
       {/* All Collectors Section */}
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">All Registered Collectors</h2>
+          <h2 className="text-heading-3 text-gray-900">All Registered Collectors</h2>
           <p className="text-sm text-gray-500 mt-1">View all collectors available for assignment</p>
         </div>
         <div className="p-6 overflow-x-auto">
@@ -368,12 +376,14 @@ export default function AdminDashboard() {
       </div>
 
       {/* Waste Pickup Requests & Collector Assignment */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Waste Pickup Requests</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            View all requests and manually assign collectors to UNASSIGNED requests
-          </p>
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg hover-lift card-enter" style={{ animationDelay: '0.8s' }}>
+        <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-emerald-50/50 to-green-50/50 rounded-t-2xl">
+          <div>
+            <h2 className="text-heading-3 text-gray-900">Waste Pickup Requests</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              View all requests and manually assign collectors to UNASSIGNED requests
+            </p>
+          </div>
         </div>
         <div className="p-6 space-y-3 overflow-x-auto">
           {requests.length === 0 ? (
@@ -388,6 +398,7 @@ export default function AdminDashboard() {
                   <th className="px-4 py-2">Quantity (kg)</th>
                   <th className="px-4 py-2">Zone</th>
                   <th className="px-4 py-2">Pickup Address</th>
+                  <th className="px-4 py-2">Image</th>
                   <th className="px-4 py-2">Status</th>
                   <th className="px-4 py-2">Assigned Collector</th>
                   <th className="px-4 py-2">Action</th>
@@ -410,6 +421,24 @@ export default function AdminDashboard() {
                       <td className="px-4 py-2 text-gray-700">{req.zoneName || `Zone ${req.zoneId || "N/A"}`}</td>
                       <td className="px-4 py-2 text-gray-700 max-w-xs truncate">
                         {req.pickupAddress || "N/A"}
+                      </td>
+                      <td className="px-4 py-2">
+                        {req.imageUrl ? (
+                          <a
+                            href={`http://localhost:8080/${req.imageUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={`http://localhost:8080/${req.imageUrl}`}
+                              alt="Waste image"
+                              className="w-16 h-16 object-cover rounded border border-gray-300 hover:shadow-md transition cursor-pointer"
+                            />
+                          </a>
+                        ) : (
+                          <span className="text-xs text-gray-400">No image</span>
+                        )}
                       </td>
                       <td className="px-4 py-2">
                         <StatusBadge
@@ -451,7 +480,7 @@ export default function AdminDashboard() {
                             <button
                               onClick={() => handleAssignCollector(req.requestId)}
                               disabled={assigningId === req.requestId || !collectorSelections[req.requestId]}
-                              className="px-3 py-1 text-xs font-semibold rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              className="px-3 py-1 text-xs font-semibold rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
                             >
                               {assigningId === req.requestId ? "Assigning..." : "Assign"}
                             </button>

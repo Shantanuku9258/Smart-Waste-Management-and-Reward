@@ -30,7 +30,7 @@ export default function StatusBadge({ status }) {
 
   return (
     <span
-      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${config.className}`}
+      className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm ${config.className} transition-all duration-200 hover:scale-105`}
     >
       {config.label}
     </span>
