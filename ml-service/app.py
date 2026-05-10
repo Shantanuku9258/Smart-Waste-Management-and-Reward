@@ -12,6 +12,7 @@ import joblib
 import numpy as np
 from datetime import datetime
 import os
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -35,6 +36,13 @@ def load_models():
         # Eco score configuration
         models['eco_score_config'] = joblib.load(os.path.join(MODELS_DIR, 'eco_score_config.pkl'))
         print("[OK] Loaded eco score configuration")
+        
+        # E-waste models
+        if os.path.exists(os.path.join(MODELS_DIR, 'ewaste_generation_model.pkl')):
+            models['ewaste_generation'] = joblib.load(os.path.join(MODELS_DIR, 'ewaste_generation_model.pkl'))
+            models['ewaste_demand'] = joblib.load(os.path.join(MODELS_DIR, 'demand_model.pkl'))
+            models['ewaste_priority'] = joblib.load(os.path.join(MODELS_DIR, 'priority_model.pkl'))
+            print("[OK] Loaded e-waste prediction models")
         
         print("All models loaded successfully!")
         return True
@@ -322,6 +330,123 @@ def calculate_eco_score():
         
     except Exception as e:
         return jsonify({'error': f'Eco score calculation failed: {str(e)}'}), 500
+
+def validate_ewaste_request(data):
+    if not data:
+        return 'Request body is required'
+        
+    required_fields = ['state', 'year', 'month', 'collection_centres']
+    for field in required_fields:
+        if field not in data:
+            return f'{field} is required'
+            
+    if not isinstance(data['state'], str) or not data['state'].strip():
+        return 'state must be a valid string'
+        
+    try:
+        year = int(data['year'])
+    except (ValueError, TypeError):
+        return 'year must be numeric'
+        
+    try:
+        month = int(data['month'])
+        if not (1 <= month <= 12):
+            return 'month must be between 1 and 12'
+    except (ValueError, TypeError):
+        return 'month must be numeric and between 1 and 12'
+        
+    try:
+        centres = float(data['collection_centres'])
+        if centres <= 0:
+            return 'collection_centres must be positive'
+    except (ValueError, TypeError):
+        return 'collection_centres must be a positive number'
+        
+    return None
+
+@app.route('/predict/ewaste-generation', methods=['POST'])
+def predict_ewaste_generation():
+    try:
+        data = request.get_json()
+        error_msg = validate_ewaste_request(data)
+        if error_msg:
+            return jsonify({'error': error_msg}), 400
+                
+        if 'ewaste_generation' not in models:
+            return jsonify({'error': 'E-waste generation model not loaded'}), 503
+            
+        # Create DataFrame for prediction
+        input_df = pd.DataFrame([{
+            "state": data["state"],
+            "year": int(data["year"]),
+            "month": int(data["month"]),
+            "collection_centres": float(data["collection_centres"])
+        }])
+        
+        prediction = models['ewaste_generation'].predict(input_df)[0]
+        
+        return jsonify({
+            'predictedGeneration': round(float(prediction), 2)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
+
+@app.route('/predict/ewaste-demand', methods=['POST'])
+def predict_ewaste_demand():
+    try:
+        data = request.get_json()
+        error_msg = validate_ewaste_request(data)
+        if error_msg:
+            return jsonify({'error': error_msg}), 400
+                
+        if 'ewaste_demand' not in models:
+            return jsonify({'error': 'E-waste demand model not loaded'}), 503
+            
+        # Create DataFrame for prediction
+        input_df = pd.DataFrame([{
+            "state": data["state"],
+            "year": int(data["year"]),
+            "month": int(data["month"]),
+            "collection_centres": float(data["collection_centres"])
+        }])
+        
+        prediction = models['ewaste_demand'].predict(input_df)[0]
+        
+        return jsonify({
+            'demandLevel': prediction
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
+
+@app.route('/predict/ewaste-priority', methods=['POST'])
+def predict_ewaste_priority():
+    try:
+        data = request.get_json()
+        error_msg = validate_ewaste_request(data)
+        if error_msg:
+            return jsonify({'error': error_msg}), 400
+                
+        if 'ewaste_priority' not in models:
+            return jsonify({'error': 'E-waste priority model not loaded'}), 503
+            
+        # Create DataFrame for prediction
+        input_df = pd.DataFrame([{
+            "state": data["state"],
+            "year": int(data["year"]),
+            "month": int(data["month"]),
+            "collection_centres": float(data["collection_centres"])
+        }])
+        
+        prediction = models['ewaste_priority'].predict(input_df)[0]
+        
+        return jsonify({
+            'priorityLevel': prediction
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 
 @app.errorhandler(404)
 def not_found(error):

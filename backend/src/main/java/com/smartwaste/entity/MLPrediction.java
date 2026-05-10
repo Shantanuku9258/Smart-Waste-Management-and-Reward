@@ -12,10 +12,10 @@ public class MLPrediction {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long predictionId;
 
-	@Column(name = "zone_id", nullable = false)
+	@Column(name = "zone_id", nullable = true)
 	private Long zoneId;
 
-	@Column(name = "predicted_waste_kg", nullable = false)
+	@Column(name = "predicted_waste_kg", nullable = true)
 	private Double predictedWasteKg;
 
 	@Column(name = "historical_waste_kg")
@@ -27,9 +27,24 @@ public class MLPrediction {
 	@Column(name = "month")
 	private Integer month;
 
+	@Column(name = "year")
+	private Integer year;
+
 	@CreationTimestamp
 	@Column(name = "prediction_date")
 	private LocalDateTime predictionDate;
+
+	@Column(name = "state")
+	private String state;
+
+	@Column(name = "predicted_generation")
+	private Double predictedGeneration;
+
+	@Column(name = "demand_level")
+	private String demandLevel;
+
+	@Column(name = "priority_level")
+	private String priorityLevel;
 
 	// Getters and Setters
 	public Long getPredictionId() {
@@ -80,12 +95,52 @@ public class MLPrediction {
 		this.month = month;
 	}
 
+	public Integer getYear() {
+		return year;
+	}
+
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+
 	public LocalDateTime getPredictionDate() {
 		return predictionDate;
 	}
 
 	public void setPredictionDate(LocalDateTime predictionDate) {
 		this.predictionDate = predictionDate;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public Double getPredictedGeneration() {
+		return predictedGeneration;
+	}
+
+	public void setPredictedGeneration(Double predictedGeneration) {
+		this.predictedGeneration = predictedGeneration;
+	}
+
+	public String getDemandLevel() {
+		return demandLevel;
+	}
+
+	public void setDemandLevel(String demandLevel) {
+		this.demandLevel = demandLevel;
+	}
+
+	public String getPriorityLevel() {
+		return priorityLevel;
+	}
+
+	public void setPriorityLevel(String priorityLevel) {
+		this.priorityLevel = priorityLevel;
 	}
 }
 

@@ -84,8 +84,12 @@ export const isTokenExpired = () => {
     const parts = token.split(".");
     if (parts.length !== 3) return true;
 
-    // Decode payload (second part)
-    const payload = JSON.parse(atob(parts[1]));
+    // Decode payload (second part) safely handling Base64URL
+    let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padLength = (4 - (base64.length % 4)) % 4;
+    base64 += '='.repeat(padLength);
+    
+    const payload = JSON.parse(atob(base64));
     const exp = payload.exp * 1000; // Convert to milliseconds
     const now = Date.now();
 

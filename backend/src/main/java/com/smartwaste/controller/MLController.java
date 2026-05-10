@@ -1,6 +1,7 @@
 package com.smartwaste.controller;
 
 import com.smartwaste.dto.EcoScoreRequestDTO;
+import com.smartwaste.dto.EwastePredictionRequestDTO;
 import com.smartwaste.dto.MLClassificationRequestDTO;
 import com.smartwaste.dto.MLPredictionRequestDTO;
 import com.smartwaste.entity.MLClassification;
@@ -146,6 +147,60 @@ public class MLController {
 			return ResponseEntity.ok(ecoScore);
 		} catch (Exception e) {
 			return ResponseEntity.status(503).build();
+		}
+	}
+
+	/**
+	 * Predict e-waste generation
+	 * POST /api/ml/predict/ewaste-generation
+	 */
+	@PostMapping("/predict/ewaste-generation")
+	@PreAuthorize("hasAnyRole('USER', 'COLLECTOR', 'ADMIN')")
+	public ResponseEntity<Map<String, Object>> predictEwasteGeneration(
+		@RequestBody EwastePredictionRequestDTO request
+	) {
+		try {
+			Map<String, Object> result = mlService.predictEwasteGeneration(request);
+			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(503)
+				.body(Map.of("error", "ML e-waste generation service is currently offline."));
+		}
+	}
+
+	/**
+	 * Predict e-waste demand
+	 * POST /api/ml/predict/ewaste-demand
+	 */
+	@PostMapping("/predict/ewaste-demand")
+	@PreAuthorize("hasAnyRole('USER', 'COLLECTOR', 'ADMIN')")
+	public ResponseEntity<Map<String, Object>> predictEwasteDemand(
+		@RequestBody EwastePredictionRequestDTO request
+	) {
+		try {
+			Map<String, Object> result = mlService.predictEwasteDemand(request);
+			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(503)
+				.body(Map.of("error", "ML e-waste demand service is currently offline."));
+		}
+	}
+
+	/**
+	 * Predict e-waste priority
+	 * POST /api/ml/predict/ewaste-priority
+	 */
+	@PostMapping("/predict/ewaste-priority")
+	@PreAuthorize("hasAnyRole('USER', 'COLLECTOR', 'ADMIN')")
+	public ResponseEntity<Map<String, Object>> predictEwastePriority(
+		@RequestBody EwastePredictionRequestDTO request
+	) {
+		try {
+			Map<String, Object> result = mlService.predictEwastePriority(request);
+			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			return ResponseEntity.status(503)
+				.body(Map.of("error", "ML e-waste priority service is currently offline."));
 		}
 	}
 }

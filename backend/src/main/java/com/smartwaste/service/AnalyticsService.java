@@ -200,6 +200,7 @@ public class AnalyticsService {
 		LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : null;
 
 		List<MLPrediction> predictions = mlPredictionRepository.findAll().stream()
+			.filter(pred -> pred.getZoneId() != null)
 			.filter(pred -> zoneId == null || pred.getZoneId().equals(zoneId))
 			.filter(pred -> pred.getPredictionDate() != null)
 			.filter(pred -> start == null || !pred.getPredictionDate().isBefore(start))

@@ -46,3 +46,21 @@ export const recalculateEcoScore = (userId, token) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
+// Predict e-waste generation
+export const predictEwasteGeneration = (data, token) =>
+  axiosInstance.post("/ml/predict/ewaste-generation", data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+// Predict e-waste demand
+export const predictEwasteDemand = (data, token) =>
+  axiosInstance.post("/ml/predict/ewaste-demand", data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+// Predict e-waste priority
+export const predictEwastePriority = (data, token) =>
+  axiosInstance.post("/ml/predict/ewaste-priority", data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+

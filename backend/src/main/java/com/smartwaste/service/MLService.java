@@ -1,6 +1,7 @@
 package com.smartwaste.service;
 
 import com.smartwaste.dto.EcoScoreRequestDTO;
+import com.smartwaste.dto.EwastePredictionRequestDTO;
 import com.smartwaste.dto.MLClassificationRequestDTO;
 import com.smartwaste.dto.MLPredictionRequestDTO;
 import com.smartwaste.entity.MLClassification;
@@ -270,6 +271,150 @@ public class MLService {
 	 */
 	public Optional<UserEcoScore> getUserEcoScore(Long userId) {
 		return userEcoScoreRepository.findFirstByUserIdOrderByCalculatedDateDesc(userId);
+	}
+
+	/**
+	 * Save or update E-waste prediction
+	 */
+	private void saveEwastePrediction(String state, Integer year, Integer month, Double predictedGeneration, String demandLevel, String priorityLevel) {
+		MLPrediction prediction = mlPredictionRepository.findByStateAndYearAndMonth(state, year, month)
+			.orElse(new MLPrediction());
+
+		prediction.setState(state);
+		prediction.setYear(year);
+		prediction.setMonth(month);
+
+		if (predictedGeneration != null) {
+			prediction.setPredictedGeneration(predictedGeneration);
+		}
+		if (demandLevel != null) {
+			prediction.setDemandLevel(demandLevel);
+		}
+		if (priorityLevel != null) {
+			prediction.setPriorityLevel(priorityLevel);
+		}
+
+		mlPredictionRepository.save(prediction);
+	}
+
+	/**
+	 * Predict e-waste generation
+	 */
+	public Map<String, Object> predictEwasteGeneration(EwastePredictionRequestDTO request) {
+		try {
+			Map<String, Object> requestBody = new HashMap<>();
+			requestBody.put("state", request.getState());
+			requestBody.put("year", request.getYear());
+			requestBody.put("month", request.getMonth());
+			requestBody.put("collection_centres", request.getCollectionCentres());
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+			@SuppressWarnings("unchecked")
+			ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(
+				mlServiceUrl + "/predict/ewaste-generation",
+				entity,
+				(Class<Map<String, Object>>) (Class<?>) Map.class
+			);
+
+			Map<String, Object> result = response.getBody();
+			if (result != null) {
+				saveEwastePrediction(
+					request.getState(), 
+					request.getYear(), 
+					request.getMonth(), 
+					((Number) result.get("predictedGeneration")).doubleValue(), 
+					null, 
+					null
+				);
+			}
+
+			return result != null ? result : new HashMap<>();
+		} catch (RestClientException e) {
+			throw new RuntimeException("Failed to call ML service for e-waste generation: " + e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Predict e-waste demand
+	 */
+	public Map<String, Object> predictEwasteDemand(EwastePredictionRequestDTO request) {
+		try {
+			Map<String, Object> requestBody = new HashMap<>();
+			requestBody.put("state", request.getState());
+			requestBody.put("year", request.getYear());
+			requestBody.put("month", request.getMonth());
+			requestBody.put("collection_centres", request.getCollectionCentres());
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+			@SuppressWarnings("unchecked")
+			ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(
+				mlServiceUrl + "/predict/ewaste-demand",
+				entity,
+				(Class<Map<String, Object>>) (Class<?>) Map.class
+			);
+
+			Map<String, Object> result = response.getBody();
+			if (result != null) {
+				saveEwastePrediction(
+					request.getState(), 
+					request.getYear(), 
+					request.getMonth(), 
+					null, 
+					(String) result.get("demandLevel"), 
+					null
+				);
+			}
+
+			return result != null ? result : new HashMap<>();
+		} catch (RestClientException e) {
+			throw new RuntimeException("Failed to call ML service for e-waste demand: " + e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Predict e-waste priority
+	 */
+	public Map<String, Object> predictEwastePriority(EwastePredictionRequestDTO request) {
+		try {
+			Map<String, Object> requestBody = new HashMap<>();
+			requestBody.put("state", request.getState());
+			requestBody.put("year", request.getYear());
+			requestBody.put("month", request.getMonth());
+			requestBody.put("collection_centres", request.getCollectionCentres());
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+			@SuppressWarnings("unchecked")
+			ResponseEntity<Map<String, Object>> response = restTemplate.postForEntity(
+				mlServiceUrl + "/predict/ewaste-priority",
+				entity,
+				(Class<Map<String, Object>>) (Class<?>) Map.class
+			);
+
+			Map<String, Object> result = response.getBody();
+			if (result != null) {
+				saveEwastePrediction(
+					request.getState(), 
+					request.getYear(), 
+					request.getMonth(), 
+					null, 
+					null, 
+					(String) result.get("priorityLevel")
+				);
+			}
+
+			return result != null ? result : new HashMap<>();
+		} catch (RestClientException e) {
+			throw new RuntimeException("Failed to call ML service for e-waste priority: " + e.getMessage(), e);
+		}
 	}
 }
 

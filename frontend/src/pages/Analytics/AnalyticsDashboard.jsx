@@ -16,6 +16,7 @@ import WasteByTypeChart from "./WasteByTypeChart";
 import PredictionVsActualChart from "./PredictionVsActualChart";
 import CollectorPerformanceTable from "./CollectorPerformanceTable";
 import TopEcoUsersTable from "./TopEcoUsersTable";
+import EWastePredictor from "../ML/EWastePredictor";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
@@ -198,6 +199,11 @@ export default function AnalyticsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 card-enter" style={{ animationDelay: '0.5s' }}>
         <CollectorPerformanceTable data={collectorPerformance} loading={loading} />
         <TopEcoUsersTable data={topEcoUsers} loading={loading} />
+      </div>
+
+      {/* E-Waste Predictor */}
+      <div className="card-enter" style={{ animationDelay: '0.6s' }}>
+        <EWastePredictor />
       </div>
     </div>
   );
