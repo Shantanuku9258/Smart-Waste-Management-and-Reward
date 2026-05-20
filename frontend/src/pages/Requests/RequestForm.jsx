@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FileUpload from "../../components/FileUpload";
 import { createRequest } from "./api";
-import { classifyWaste } from "../ML/mlApi";
+import { classifyWaste, classifyWasteAndSave } from "../ML/mlApi";
 import toast from "react-hot-toast";
 import {
   MapPinIcon,
@@ -92,14 +92,25 @@ export default function RequestForm({ userId, token, onCreated }) {
     }
 
     try {
-      await createRequest(data, token);
+      const createRes = await createRequest(data, token);
+      const newRequestId = createRes.data?.requestId;
+
+      // Persist ML classification result to backend if we have one and a valid requestId
+      if (newRequestId && classificationResult && form.pickupAddress) {
+        try {
+          await classifyWasteAndSave(
+            newRequestId,
+            { description: form.pickupAddress, category: form.wasteType },
+            token
+          );
+        } catch (mlErr) {
+          // Non-blocking — ML save failure does not affect the request
+          console.warn("ML classification save skipped:", mlErr.message);
+        }
+      }
+
       toast.success("Waste request created successfully!");
-      setForm({
-        wasteType: WASTE_TYPES[0],
-        weightKg: "",
-        pickupAddress: "",
-        zoneId: "",
-      });
+      setForm({ wasteType: WASTE_TYPES[0], weightKg: "", pickupAddress: "", zoneId: "" });
       setImage(null);
       setClassificationResult(null);
       onCreated?.();

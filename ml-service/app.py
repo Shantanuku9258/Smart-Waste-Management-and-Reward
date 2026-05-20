@@ -43,6 +43,16 @@ def load_models():
             models['ewaste_demand'] = joblib.load(os.path.join(MODELS_DIR, 'demand_model.pkl'))
             models['ewaste_priority'] = joblib.load(os.path.join(MODELS_DIR, 'priority_model.pkl'))
             print("[OK] Loaded e-waste prediction models")
+
+        # Recycling Efficiency Score model
+        if os.path.exists(os.path.join(MODELS_DIR, 'recycling_efficiency_model.pkl')):
+            models['recycling_efficiency'] = joblib.load(os.path.join(MODELS_DIR, 'recycling_efficiency_model.pkl'))
+            print("[OK] Loaded recycling efficiency model")
+
+        # Growth Rate model
+        if os.path.exists(os.path.join(MODELS_DIR, 'growth_rate_model.pkl')):
+            models['growth_rate'] = joblib.load(os.path.join(MODELS_DIR, 'growth_rate_model.pkl'))
+            print("[OK] Loaded growth rate model")
         
         print("All models loaded successfully!")
         return True
@@ -384,11 +394,33 @@ def predict_ewaste_generation():
         }])
         
         prediction = models['ewaste_generation'].predict(input_df)[0]
-        
-        return jsonify({
+
+        # Recycling Efficiency Score: (estimated_collected / estimated_generation) × 100
+        recycling_efficiency = None
+        if 'recycling_efficiency' in models:
+            recycling_efficiency = round(float(
+                models['recycling_efficiency'].predict(input_df)[0]
+            ), 2)
+            # Clamp to valid percentage range
+            recycling_efficiency = max(0.0, min(100.0, recycling_efficiency))
+
+        # Growth Rate: year-over-year change in generation (%)
+        growth_rate = None
+        if 'growth_rate' in models:
+            growth_rate = round(float(
+                models['growth_rate'].predict(input_df)[0]
+            ), 2)
+
+        response_data = {
             'predictedGeneration': round(float(prediction), 2)
-        }), 200
-        
+        }
+        if recycling_efficiency is not None:
+            response_data['recyclingEfficiencyScore'] = recycling_efficiency
+        if growth_rate is not None:
+            response_data['growthRate'] = growth_rate
+
+        return jsonify(response_data), 200
+
     except Exception as e:
         return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 

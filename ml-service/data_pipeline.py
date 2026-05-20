@@ -9,8 +9,8 @@ def clean_column_names(df):
     return df
 
 def generate_pipeline():
-    # File paths
-    base_dir = 'c:/Users/manav/Desktop/SmartWasteManagement/ml-service/data'
+    # File paths — use path relative to this script so it works on any machine
+    base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
     file1 = os.path.join(base_dir, 'RS_Session_254_AU_2294_1.csv')
     file2 = os.path.join(base_dir, 'RS_Session_266_AU_2384_A.csv')
     file3 = os.path.join(base_dir, 'RS_Session_258_AU_1002_A_and_B.csv')
@@ -65,7 +65,7 @@ def generate_pipeline():
     # 4 & 5. Expand to state-wise yearly records (2017-2024)
     years = list(range(2017, 2025))
     expanded_rows = []
-    
+
     # Linear projection for national data for any missing years up to 2024
     for y in years:
         if y not in national_df['year'].values:
@@ -124,24 +124,47 @@ def generate_pipeline():
                 })
                 
     final_df = pd.DataFrame(expanded_rows)
-    
+
+    # ── VERY IMPORTANT CORRECTION ──
+    # Recycling Efficiency Score = (estimated_collected / estimated_generation) × 100
+    # This gives a proper efficiency percentage (0-100) for each state-month record.
+    final_df['recycling_efficiency_score'] = np.where(
+        final_df['estimated_generation'] > 0,
+        (final_df['estimated_collected'] / final_df['estimated_generation'] * 100).round(2),
+        0.0
+    )
+
+    # ── Growth Rate ──
+    # Year-over-year change in estimated_generation for the same state and month.
+    # Formula: ((current_gen - prev_year_gen) / prev_year_gen) × 100
+    # Perfect for: yearly trend analysis, forecasting, admin analytics.
+    final_df = final_df.sort_values(['state', 'month', 'year']).reset_index(drop=True)
+    final_df['prev_year_gen'] = final_df.groupby(['state', 'month'])['estimated_generation'].shift(1)
+    final_df['growth_rate'] = np.where(
+        final_df['prev_year_gen'] > 0,
+        ((final_df['estimated_generation'] - final_df['prev_year_gen'])
+         / final_df['prev_year_gen'] * 100).round(2),
+        0.0
+    )
+    final_df.drop(columns=['prev_year_gen'], inplace=True)
+
     # 7. Create ML labels
     gen_q25 = final_df['estimated_generation'].quantile(0.25)
     gen_q75 = final_df['estimated_generation'].quantile(0.75)
-    
+
     final_df['demand_level'] = pd.cut(
-        final_df['estimated_generation'], 
-        bins=[-np.inf, gen_q25, gen_q75, np.inf], 
+        final_df['estimated_generation'],
+        bins=[-np.inf, gen_q25, gen_q75, np.inf],
         labels=['Low', 'Medium', 'High']
     )
-    
+
     pct_q25 = final_df['collection_percentage'].quantile(0.25)
     pct_q75 = final_df['collection_percentage'].quantile(0.75)
-    
+
     final_df['priority_level'] = pd.cut(
         final_df['collection_percentage'],
         bins=[-np.inf, pct_q25, pct_q75, np.inf],
-        labels=['High', 'Medium', 'Low'] 
+        labels=['High', 'Medium', 'Low']
     )
     
     print(f"Total rows generated: {len(final_df)}")
@@ -152,7 +175,7 @@ def generate_pipeline():
     print("\nOriginal National Generated:")
     print(national_df[['year', 'generation']].set_index('year').round(0))
     
-    # 10. Save
+    # 10. Save (relative to data/ directory)
     out_path = os.path.join(base_dir, 'ewaste_training_data.csv')
     final_df.to_csv(out_path, index=False)
     print(f"\nSaved successfully to {out_path}")

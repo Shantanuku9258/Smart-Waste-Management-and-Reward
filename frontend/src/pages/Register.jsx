@@ -1,199 +1,259 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { EnvelopeIcon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 import axiosInstance from "../services/axiosInstance";
 import toast from "react-hot-toast";
+
+const ROLE_INFO = {
+  USER: {
+    title: "Create Account",
+    subtitle: "Join our eco-community",
+    emoji: "🌱",
+    panelTitle: "Earn While You Care",
+    panelDesc: "Submit waste pickup requests, earn reward points for each collection, and redeem them for exciting eco-friendly rewards.",
+    bullets: [
+      "📦 Create waste pickup requests",
+      "🎁 Earn reward points on collection",
+      "🌿 Track your eco score",
+      "💳 Redeem points for rewards",
+    ],
+    gradient: "linear-gradient(135deg, #10B981 0%, #3B82F6 100%)",
+    btnGradient: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+    shadow: "0 10px 25px rgba(16,185,129,0.3)",
+    focusColor: "#10B981",
+  },
+  COLLECTOR: {
+    title: "Collector Registration",
+    subtitle: "Join as a waste collector",
+    emoji: "🚛",
+    panelTitle: "Serve Your Community",
+    panelDesc: "Manage assigned pickup requests, update collection status, upload proof, and earn ₹5 for every kg of waste you collect.",
+    bullets: [
+      "📋 View assigned pickup requests",
+      "✓  Update status in real-time",
+      "📸 Upload proof photos",
+      "💰 Earn ₹5 per kg collected",
+    ],
+    gradient: "linear-gradient(135deg, #F97316 0%, #EF4444 100%)",
+    btnGradient: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+    shadow: "0 10px 25px rgba(249,115,22,0.3)",
+    focusColor: "#F97316",
+  },
+};
 
 export default function Register() {
   const [searchParams] = useSearchParams();
   const roleParam = searchParams.get("role");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const userRole = roleParam === "COLLECTOR" ? "COLLECTOR" : "USER";
+  const info = ROLE_INFO[userRole];
+
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Determine role from URL param (default to USER, prevent ADMIN)
-  const userRole = roleParam === "COLLECTOR" ? "COLLECTOR" : "USER";
-
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
     setLoading(true);
-
     try {
       await axiosInstance.post("/auth/register", {
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
-        role: userRole, // Use role from URL param (USER or COLLECTOR)
+        role: userRole,
       });
-
-      toast.success(`Registration successful as ${userRole}! Please login.`);
+      toast.success(`Account created as ${userRole}! Please login.`);
       navigate("/login");
-    } catch (error) {
-      const message =
-        error.response?.data?.message || "Registration failed. Please try again.";
-      toast.error(message);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Registration failed. Please try again.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-teal-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl mb-4 shadow-md">
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                style={{ maxWidth: "32px", maxHeight: "32px" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {userRole === "COLLECTOR" ? "Collector Registration" : "Create Account"}
+    /* ── Full-page purple gradient background (same as login) ── */
+    <div
+      className="min-h-screen relative overflow-hidden flex items-center justify-center p-4"
+      style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}
+    >
+      {/* ── Animated blobs ── */}
+      <div className="animate-float absolute rounded-full opacity-10 bg-white pointer-events-none"
+        style={{ width: 300, height: 300, top: -50, left: -50 }} />
+      <div className="animate-float-2 absolute rounded-full opacity-10 bg-white pointer-events-none"
+        style={{ width: 200, height: 200, bottom: -30, right: "5%" }} />
+      <div className="animate-float-4 absolute rounded-full opacity-10 bg-white pointer-events-none"
+        style={{ width: 250, height: 250, top: "50%", right: -50 }} />
+
+      {/* ── Card ── */}
+      <div
+        className="animate-slideUp relative z-10 bg-white rounded-2xl shadow-2xl overflow-hidden w-full"
+        style={{ maxWidth: 900, display: "grid", gridTemplateColumns: "1fr 1fr" }}
+      >
+        {/* ────────── LEFT: Form ────────── */}
+        <div className="p-10 flex flex-col justify-center">
+          <div className="mb-8">
+            <h1
+              className="text-4xl font-bold text-gray-900 mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {info.title}
             </h1>
-            <p className="text-gray-500 text-sm">
-              {userRole === "COLLECTOR"
-                ? "Register as a waste collector"
-                : "Join us to make a difference"}
-            </p>
-            {userRole === "COLLECTOR" && (
-              <div className="mt-2 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded text-xs text-orange-700">
-                You will be able to view and manage assigned waste pickup requests after registration.
-              </div>
-            )}
+            <p className="text-gray-500 text-sm">{info.subtitle}</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Role switcher */}
+          <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-xl">
+            {["USER", "COLLECTOR"].map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => navigate(`/register?role=${r}`)}
+                className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
+                style={{
+                  background: userRole === r
+                    ? "linear-gradient(135deg, #10B981 0%, #059669 100%)"
+                    : "transparent",
+                  color: userRole === r ? "white" : "#6B7280",
+                  boxShadow: userRole === r ? "0 2px 8px rgba(16,185,129,0.3)" : "none",
+                }}
+              >
+                {r === "USER" ? "👤 User" : "🚛 Collector"}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <UserIcon className="h-5 w-5 text-gray-400" style={{ maxWidth: "20px", maxHeight: "20px" }} />
-                </div>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  minLength={2}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none text-sm"
-                  placeholder="Enter your full name"
-                />
-              </div>
+              <label className="block text-sm font-medium text-gray-800 mb-2">Full Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                minLength={2}
+                placeholder="Enter your full name"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none transition-all duration-300"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+                onFocus={(e) => (e.target.style.borderColor = info.focusColor)}
+                onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <EnvelopeIcon className="h-5 w-5 text-gray-400" style={{ maxWidth: "20px", maxHeight: "20px" }} />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none text-sm"
-                  placeholder="your@email.com"
-                />
-              </div>
+              <label className="block text-sm font-medium text-gray-800 mb-2">Email Address</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none transition-all duration-300"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+                onFocus={(e) => (e.target.style.borderColor = info.focusColor)}
+                onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LockClosedIcon className="h-5 w-5 text-gray-400" style={{ maxWidth: "20px", maxHeight: "20px" }} />
-                </div>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  minLength={6}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition outline-none text-sm"
-                  placeholder="Create a password (min 6 characters)"
-                />
-              </div>
+              <label className="block text-sm font-medium text-gray-800 mb-2">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                minLength={6}
+                placeholder="Min 6 characters"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none transition-all duration-300"
+                style={{ fontFamily: "'Poppins', sans-serif" }}
+                onFocus={(e) => (e.target.style.borderColor = info.focusColor)}
+                onBlur={(e) => (e.target.style.borderColor = "#E5E7EB")}
+              />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm"
+              className="w-full py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-200 disabled:opacity-60 mt-2"
+              style={{ background: info.btnGradient, boxShadow: loading ? "none" : info.shadow }}
+              onMouseEnter={(e) => !loading && (e.currentTarget.style.transform = "translateY(-2px)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
             >
               {loading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    style={{ maxWidth: "20px", maxHeight: "20px" }}
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4" />
+                    <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Creating account...
-                </>
-              ) : (
-                "Create Account"
-              )}
+                  Creating account…
+                </span>
+              ) : `Create ${userRole === "COLLECTOR" ? "Collector" : ""} Account`}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/login")}
-                className="text-emerald-600 hover:text-emerald-700 font-semibold transition"
-              >
-                Sign in
-              </button>
-            </p>
+          <div className="mt-5 text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <button onClick={() => navigate("/login")}
+              className="font-semibold transition"
+              style={{ color: info.focusColor }}>
+              Sign in
+            </button>
           </div>
+
+          {userRole === "COLLECTOR" && (
+            <div className="mt-4 p-3 rounded-xl text-xs text-orange-700 bg-orange-50 border border-orange-200">
+              ℹ After registration, an admin must assign you a zone and requests before you can start collecting.
+            </div>
+          )}
+        </div>
+
+        {/* ────────── RIGHT: Visual panel ────────── */}
+        <div
+          className="p-10 flex flex-col justify-center items-center text-white"
+          style={{ background: info.gradient }}
+        >
+          <div className="animate-bounceY text-7xl mb-5 select-none">{info.emoji}</div>
+
+          <h3 className="text-2xl font-bold mb-3 text-center">{info.panelTitle}</h3>
+          <p className="text-sm text-center opacity-90 leading-relaxed mb-6">{info.panelDesc}</p>
+
+          {/* Benefits list */}
+          <div
+            className="w-full rounded-xl p-5 space-y-2"
+            style={{
+              background: "rgba(255,255,255,0.12)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255,255,255,0.2)",
+            }}
+          >
+            <p className="font-semibold text-white/90 text-sm mb-3">What you can do:</p>
+            {info.bullets.map((b) => (
+              <p key={b} className="text-sm text-white/90">{b}</p>
+            ))}
+          </div>
+
+          <p className="text-xs text-white/60 mt-5 text-center italic">
+            Admin accounts cannot be self-registered.
+          </p>
         </div>
       </div>
+
+      {/* ── Responsive: hide right panel on small screens ── */}
+      <style>{`
+        @media (max-width: 640px) {
+          .animate-slideUp > div:last-child { display: none; }
+          .animate-slideUp { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import PredictionVsActualChart from "./PredictionVsActualChart";
 import CollectorPerformanceTable from "./CollectorPerformanceTable";
 import TopEcoUsersTable from "./TopEcoUsersTable";
 import EWastePredictor from "../ML/EWastePredictor";
+import WastePredictionChart from "../ML/WastePredictionChart";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
@@ -201,9 +202,32 @@ export default function AnalyticsDashboard() {
         <TopEcoUsersTable data={topEcoUsers} loading={loading} />
       </div>
 
-      {/* E-Waste Predictor */}
+      {/* Zone Waste Quantity Prediction (ML Advisory — Admin Only) */}
       <div className="card-enter" style={{ animationDelay: '0.6s' }}>
-        <EWastePredictor />
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg p-5">
+          <div className="flex items-start gap-3 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
+            <span className="text-base">ℹ️</span>
+            <span>
+              <strong>ML Advisory:</strong> Zone waste quantity predictions are for planning purposes only.
+              They do not affect collection workflows, assignments, or rewards.
+            </span>
+          </div>
+          <WastePredictionChart token={token} />
+        </div>
+      </div>
+
+      {/* E-Waste Predictor (ML Advisory — Admin Only) */}
+      <div className="card-enter" style={{ animationDelay: '0.7s' }}>
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg p-5">
+          <div className="flex items-start gap-3 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
+            <span className="text-base">ℹ️</span>
+            <span>
+              <strong>ML Advisory:</strong> E-waste generation and demand predictions are advisory insights
+              based on Indian state-level data. Not used to drive any system decisions.
+            </span>
+          </div>
+          <EWastePredictor />
+        </div>
       </div>
     </div>
   );

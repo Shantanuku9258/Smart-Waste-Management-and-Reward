@@ -61,6 +61,20 @@ public class MLService {
 		this.wasteRequestRepository = wasteRequestRepository;
 	}
 
+	// ── Safe number extractors — prevent NPE when Flask key is missing or null ──
+
+	private double safeDouble(Map<String, Object> map, String key, double fallback) {
+		if (map == null) return fallback;
+		Object v = map.get(key);
+		return v instanceof Number ? ((Number) v).doubleValue() : fallback;
+	}
+
+	private int safeInt(Map<String, Object> map, String key, int fallback) {
+		if (map == null) return fallback;
+		Object v = map.get(key);
+		return v instanceof Number ? ((Number) v).intValue() : fallback;
+	}
+
 	/**
 	 * Predict waste quantity for a zone
 	 */
@@ -90,11 +104,11 @@ public class MLService {
 			);
 
 			Map<String, Object> result = response.getBody();
-			if (result != null) {
+			if (result != null && result.containsKey("predictedWasteKg")) {
 				// Save prediction to database
 				MLPrediction prediction = new MLPrediction();
 				prediction.setZoneId(request.getZoneId());
-				prediction.setPredictedWasteKg(((Number) result.get("predictedWasteKg")).doubleValue());
+				prediction.setPredictedWasteKg(safeDouble(result, "predictedWasteKg", 0.0));
 				prediction.setHistoricalWasteKg(request.getHistoricalWaste());
 				prediction.setDayOfWeek(request.getDayOfWeek());
 				prediction.setMonth(request.getMonth());
@@ -142,14 +156,15 @@ public class MLService {
 	 */
 	public MLClassification classifyWasteAndSave(Long requestId, MLClassificationRequestDTO request) {
 		Map<String, Object> result = classifyWaste(request);
-		
-		// Save classification
+
 		MLClassification classification = new MLClassification();
 		classification.setRequestId(requestId);
-		classification.setWasteType((String) result.get("wasteType"));
-		classification.setConfidence(((Number) result.get("confidence")).doubleValue());
+		// Guard: wasteType or confidence may be absent if model not loaded
+		Object wt = result.get("wasteType");
+		classification.setWasteType(wt instanceof String ? (String) wt : null);
+		classification.setConfidence(safeDouble(result, "confidence", 0.0));
 		classification.setDescription(request.getDescription());
-		
+
 		return mlClassificationRepository.save(classification);
 	}
 
@@ -179,26 +194,27 @@ public class MLService {
 			);
 
 			Map<String, Object> result = response.getBody();
-			if (result != null) {
-				// Save eco score to database
+			if (result != null && result.containsKey("ecoScore")) {
 				UserEcoScore ecoScore = new UserEcoScore();
 				ecoScore.setUserId(request.getUserId());
-				ecoScore.setEcoScore(((Number) result.get("ecoScore")).intValue());
-				
+				ecoScore.setEcoScore(safeInt(result, "ecoScore", 0));
+
 				@SuppressWarnings("unchecked")
-				Map<String, Object> breakdown = (Map<String, Object>) result.get("breakdown");
+				Map<String, Object> breakdown = (result.get("breakdown") instanceof Map)
+					? (Map<String, Object>) result.get("breakdown") : null;
+
 				if (breakdown != null) {
-					ecoScore.setActivityScore(((Number) breakdown.get("activityScore")).doubleValue());
-					ecoScore.setSegregationScore(((Number) breakdown.get("segregationScore")).doubleValue());
-					ecoScore.setFrequencyScore(((Number) breakdown.get("frequencyScore")).intValue());
-					ecoScore.setWeightScore(((Number) breakdown.get("weightScore")).intValue());
+					ecoScore.setActivityScore(safeDouble(breakdown, "activityScore", 0.0));
+					ecoScore.setSegregationScore(safeDouble(breakdown, "segregationScore", 0.0));
+					ecoScore.setFrequencyScore(safeInt(breakdown, "frequencyScore", 0));
+					ecoScore.setWeightScore(safeInt(breakdown, "weightScore", 0));
 				}
-				
+
 				ecoScore.setUserActivity(request.getUserActivity());
 				ecoScore.setSegregationAccuracy(request.getSegregationAccuracy());
 				ecoScore.setRequestFrequency(request.getRequestFrequency());
 				ecoScore.setAvgWeight(request.getAvgWeight());
-				
+
 				userEcoScoreRepository.save(ecoScore);
 			}
 
@@ -320,13 +336,13 @@ public class MLService {
 			);
 
 			Map<String, Object> result = response.getBody();
-			if (result != null) {
+			if (result != null && result.containsKey("predictedGeneration")) {
 				saveEwastePrediction(
-					request.getState(), 
-					request.getYear(), 
-					request.getMonth(), 
-					((Number) result.get("predictedGeneration")).doubleValue(), 
-					null, 
+					request.getState(),
+					request.getYear(),
+					request.getMonth(),
+					safeDouble(result, "predictedGeneration", 0.0),
+					null,
 					null
 				);
 			}
