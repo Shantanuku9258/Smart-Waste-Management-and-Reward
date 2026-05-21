@@ -204,7 +204,7 @@ export default function AnalyticsDashboard() {
 
       {/* Zone Waste Quantity Prediction (ML Advisory — Admin Only) */}
       <div className="card-enter" style={{ animationDelay: '0.6s' }}>
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg p-5">
+        <div className="dash-panel shadow-lg p-5">
           <div className="flex items-start gap-3 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
             <span className="text-base">ℹ️</span>
             <span>
@@ -218,7 +218,7 @@ export default function AnalyticsDashboard() {
 
       {/* E-Waste Predictor (ML Advisory — Admin Only) */}
       <div className="card-enter" style={{ animationDelay: '0.7s' }}>
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg p-5">
+        <div className="dash-panel shadow-lg p-5">
           <div className="flex items-start gap-3 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
             <span className="text-base">ℹ️</span>
             <span>

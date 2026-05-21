@@ -45,15 +45,15 @@ export default function KPICards({ overview }) {
       {kpis.map((kpi, index) => (
         <div
           key={index}
-          className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg hover-lift glow-hover card-enter"
+          className="dash-panel p-6 hover-lift glow-hover card-enter"
           style={{ animationDelay: `${0.1 + index * 0.1}s` }}
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 mb-1">{kpi.title}</p>
-              <p className="text-3xl font-bold text-gray-900 number-animate">
+              <p className="dash-kpi-label mb-1">{kpi.title}</p>
+              <p className="dash-kpi-value number-animate">
                 {kpi.value}
-                {kpi.unit && <span className="text-lg text-gray-500 ml-1">{kpi.unit}</span>}
+                {kpi.unit && <span className="text-lg dash-kpi-sub ml-1">{kpi.unit}</span>}
               </p>
             </div>
             <div className={`${kpi.color} w-14 h-14 rounded-xl flex items-center justify-center shadow-md`}>

@@ -293,24 +293,31 @@ public class MLService {
 	 * Save or update E-waste prediction
 	 */
 	private void saveEwastePrediction(String state, Integer year, Integer month, Double predictedGeneration, String demandLevel, String priorityLevel) {
-		MLPrediction prediction = mlPredictionRepository.findByStateAndYearAndMonth(state, year, month)
-			.orElse(new MLPrediction());
+		try {
+			MLPrediction prediction = mlPredictionRepository
+				.findFirstByStateAndYearAndMonthOrderByPredictionDateDesc(state, year, month)
+				.orElse(new MLPrediction());
 
-		prediction.setState(state);
-		prediction.setYear(year);
-		prediction.setMonth(month);
+			prediction.setState(state);
+			prediction.setYear(year);
+			prediction.setMonth(month);
 
-		if (predictedGeneration != null) {
-			prediction.setPredictedGeneration(predictedGeneration);
-		}
-		if (demandLevel != null) {
-			prediction.setDemandLevel(demandLevel);
-		}
-		if (priorityLevel != null) {
-			prediction.setPriorityLevel(priorityLevel);
-		}
+			if (predictedGeneration != null) {
+				prediction.setPredictedGeneration(predictedGeneration);
+			}
+			if (demandLevel != null) {
+				prediction.setDemandLevel(demandLevel);
+			}
+			if (priorityLevel != null) {
+				prediction.setPriorityLevel(priorityLevel);
+			}
 
-		mlPredictionRepository.save(prediction);
+			mlPredictionRepository.save(prediction);
+		} catch (Exception e) {
+			// Advisory persistence must not block ML API responses
+			org.slf4j.LoggerFactory.getLogger(MLService.class)
+				.warn("Failed to persist e-waste prediction for {} {}-{}: {}", state, year, month, e.getMessage());
+		}
 	}
 
 	/**

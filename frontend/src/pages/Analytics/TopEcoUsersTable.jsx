@@ -1,7 +1,7 @@
 export default function TopEcoUsersTable({ data, loading }) {
   if (loading) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg hover-lift">
+      <div className="dash-panel p-6 shadow-lg hover-lift">
         <div className="text-center py-8 text-gray-500">Loading...</div>
       </div>
     );
@@ -9,7 +9,7 @@ export default function TopEcoUsersTable({ data, loading }) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg hover-lift">
+      <div className="dash-panel p-6 shadow-lg hover-lift">
         <h3 className="text-heading-3 text-gray-900 mb-4">Top Eco Score Users</h3>
         <div className="text-center py-8 text-gray-500">No data available</div>
       </div>
@@ -17,7 +17,7 @@ export default function TopEcoUsersTable({ data, loading }) {
   }
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg hover-lift">
+    <div className="dash-panel p-6 shadow-lg hover-lift">
       <h3 className="text-lg font-bold text-gray-800 mb-4">Top Eco Score Users</h3>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200/50">
@@ -30,9 +30,9 @@ export default function TopEcoUsersTable({ data, loading }) {
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (kg)</th>
             </tr>
           </thead>
-          <tbody className="bg-white/50 divide-y divide-gray-200/50">
+          <tbody className="divide-y divide-emerald-900/30">
             {data.map((user, index) => (
-              <tr key={user.userId} className="hover:bg-emerald-50/50 transition-colors duration-200">
+              <tr key={user.userId} className="dash-row-hover transition-colors duration-200">
                 <td className="px-4 py-3 text-sm font-medium text-gray-900">#{index + 1}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{user.userName}</td>
                 <td className="px-4 py-3 text-sm">

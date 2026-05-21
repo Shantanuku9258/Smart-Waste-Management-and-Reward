@@ -99,4 +99,7 @@ CREATE TABLE IF NOT EXISTS waste_logs (
   FOREIGN KEY (zone_id) REFERENCES zones(zone_id)
 );
 
+-- 9-11. ML tables — run after this file:
+--   mysql -u root -p smart_waste < database/ml_tables.sql
+--   mysql -u root -p smart_waste < database/analytics_indexes.sql
 

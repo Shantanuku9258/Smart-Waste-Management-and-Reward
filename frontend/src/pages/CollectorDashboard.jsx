@@ -32,7 +32,7 @@ function RequestCard({ request, onStatusUpdate, showActions = true }) {
   })();
 
   return (
-    <div className={`bg-white rounded-2xl border shadow-sm p-5 transition hover:shadow-md ${
+    <div className={`dash-card p-5 transition hover:shadow-md ${
       request.status === "IN_PROGRESS" ? "border-l-4 border-l-blue-500" :
       request.status === "COLLECTED"   ? "border-l-4 border-l-green-500" :
       request.status === "REJECTED"    ? "border-l-4 border-l-red-400 opacity-70" :
@@ -134,13 +134,13 @@ function MarkCollectedModal({ request, onClose, onConfirm }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="dash-panel shadow-2xl w-full max-w-md">
         <div className="flex items-center justify-between p-5 border-b">
           <h3 className="font-bold text-gray-900">Mark Request #{request.requestId} as Collected</h3>
           <button onClick={onClose}><XMarkIcon className="h-5 w-5 text-gray-400 hover:text-gray-700" /></button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-600">
+          <div className="dash-card rounded-xl p-3 text-sm">
             <p><strong>Type:</strong> {request.wasteType} · {request.weightKg} kg</p>
             <p className="mt-0.5 truncate"><strong>Address:</strong> {request.pickupAddress}</p>
           </div>
@@ -151,7 +151,7 @@ function MarkCollectedModal({ request, onClose, onConfirm }) {
             </label>
             <div
               onClick={() => fileRef.current.click()}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50 transition"
+              className="border-2 border-dashed border-emerald-800/40 rounded-xl p-6 text-center cursor-pointer hover:border-emerald-500 dash-row-hover transition"
             >
               {preview ? (
                 <img src={preview} alt="proof preview" className="mx-auto h-40 object-cover rounded-lg" />
@@ -171,7 +171,7 @@ function MarkCollectedModal({ request, onClose, onConfirm }) {
 
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose}
-              className="flex-1 py-2.5 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition">
+              className="flex-1 py-2.5 dash-btn-ghost text-sm font-semibold rounded-xl transition">
               Cancel
             </button>
             <button type="submit" disabled={!proofFile || submitting}
@@ -260,7 +260,7 @@ export default function CollectorDashboard() {
   const todayDone   = completedReqs.length;
   const totalWaste  = completedReqs.reduce((s, r) => s + (r.weightKg || 0), 0);
 
-  const cardClass = "bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-5 shadow hover-lift transition-all";
+  const cardClass = "dash-panel p-5 hover-lift transition-all";
 
   return (
     <div className="space-y-6">
@@ -271,17 +271,17 @@ export default function CollectorDashboard() {
           <p className="text-gray-500 text-sm mt-1">Collector · {user?.email}</p>
         </div>
         <button onClick={loadRequests}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white/80 border border-gray-200 text-gray-600 text-sm rounded-xl hover:bg-white hover:text-emerald-600 transition font-semibold shadow-sm">
+          className="flex items-center gap-2 px-4 py-2.5 dash-btn-ghost text-sm rounded-xl transition font-semibold shadow-sm">
           <ArrowPathIcon className="h-4 w-4" /> Refresh
         </button>
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 bg-white/70 backdrop-blur-sm rounded-2xl p-1.5 shadow border border-white/50 overflow-x-auto">
+      <div className="flex gap-1 dash-tab-bar p-1.5 overflow-x-auto">
         {TABS.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
-              activeTab === tab.key ? "bg-emerald-600 text-white shadow-md" : "text-gray-500 hover:text-gray-800 hover:bg-white/60"
+              activeTab === tab.key ? "bg-emerald-600 text-white shadow-md" : "text-emerald-400/70 hover:text-emerald-200 hover:bg-emerald-900/40"
             }`}>
             <span>{tab.icon}</span><span>{tab.label}</span>
           </button>
@@ -308,7 +308,7 @@ export default function CollectorDashboard() {
               <p className="text-3xl font-bold text-green-700">{todayDone}</p>
               <p className="text-xs text-gray-400">Collected</p>
             </div>
-            <div className={`${cardClass} bg-gradient-to-br from-emerald-50 to-teal-50 border-l-4 border-emerald-500`}>
+            <div className={`${cardClass} border-l-4 border-emerald-500`}>
               <p className="text-xs font-medium text-emerald-600 uppercase tracking-wide mb-1">Total Earnings</p>
               <p className="text-3xl font-bold text-emerald-700">
                 ₹{collectorProfile?.totalEarnings?.toFixed(2) ?? "0.00"}
@@ -319,7 +319,7 @@ export default function CollectorDashboard() {
 
           {/* Collector info */}
           {collectorProfile && (
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow p-5 flex flex-wrap gap-4 text-sm">
+            <div className="dash-panel shadow p-5 flex flex-wrap gap-4 text-sm">
               <div><span className="text-gray-500">Vehicle:</span> <span className="font-semibold text-gray-800 ml-1">{collectorProfile.vehicleNumber || "—"}</span></div>
               <div><span className="text-gray-500">Zone:</span> <span className="font-semibold text-gray-800 ml-1">{collectorProfile.zone?.zoneName || `Zone ${collectorProfile.zoneId}`}</span></div>
               <div><span className="text-gray-500">Contact:</span> <span className="font-semibold text-gray-800 ml-1">{collectorProfile.contact || "—"}</span></div>
@@ -335,7 +335,7 @@ export default function CollectorDashboard() {
           </div>
 
           {/* Recent pickups */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+          <div className="dash-panel shadow-lg">
             <div className="p-5 border-b border-gray-100 flex items-center justify-between">
               <h3 className="font-bold text-gray-900">Active Pickups</h3>
               <button onClick={() => setActiveTab("assigned")} className="text-xs text-emerald-600 font-semibold hover:underline">
@@ -415,7 +415,7 @@ export default function CollectorDashboard() {
       {activeTab === "history" && (
         <div className="space-y-4 card-enter">
           <h2 className="text-xl font-bold text-gray-900">Collection History</h2>
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+          <div className="dash-panel shadow-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -433,7 +433,7 @@ export default function CollectorDashboard() {
                     <tr><td colSpan={6} className="text-center text-gray-400 py-8">No completed pickups yet.</td></tr>
                   ) : (
                     completedReqs.map((r) => (
-                      <tr key={r.requestId} className="hover:bg-gray-50">
+                      <tr key={r.requestId} className="dash-row-hover">
                         <td className="px-5 py-3 font-semibold text-gray-800">#{r.requestId}</td>
                         <td className="px-5 py-3 text-gray-600">{r.wasteType}</td>
                         <td className="px-5 py-3 text-gray-600">{r.weightKg} kg</td>
@@ -469,7 +469,7 @@ export default function CollectorDashboard() {
       {activeTab === "profile" && (
         <div className="space-y-5 card-enter">
           <h2 className="text-xl font-bold text-gray-900">My Profile</h2>
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg p-6">
+          <div className="dash-panel shadow-lg p-6">
             {/* Avatar */}
             <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
               <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow">
@@ -493,7 +493,7 @@ export default function CollectorDashboard() {
                   ["Total Earnings", `₹${collectorProfile.totalEarnings?.toFixed(2) ?? "0.00"}`],
                   ["Completed Pickups", completedReqs.length],
                 ].map(([label, val]) => (
-                  <div key={label} className="bg-gray-50 rounded-xl p-3">
+                  <div key={label} className="dash-card rounded-xl p-3">
                     <p className="text-xs text-gray-500 font-medium">{label}</p>
                     <p className="font-semibold text-gray-800 mt-0.5">{val}</p>
                   </div>

@@ -1,7 +1,9 @@
 package com.smartwaste.controller;
 
 import com.smartwaste.config.RateLimitingConfig;
+import com.smartwaste.entity.Collector;
 import com.smartwaste.entity.User;
+import com.smartwaste.repository.CollectorRepository;
 import com.smartwaste.repository.UserRepository;
 import com.smartwaste.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,17 +33,20 @@ public class AuthController {
 	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 	private final UserRepository userRepository;
+	private final CollectorRepository collectorRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 	private final RateLimitingConfig rateLimitingConfig;
 
 	public AuthController(
 		UserRepository userRepository,
+		CollectorRepository collectorRepository,
 		PasswordEncoder passwordEncoder,
 		JwtUtil jwtUtil,
 		RateLimitingConfig rateLimitingConfig
 	) {
 		this.userRepository = userRepository;
+		this.collectorRepository = collectorRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtUtil = jwtUtil;
 		this.rateLimitingConfig = rateLimitingConfig;
@@ -78,11 +83,22 @@ public class AuthController {
 		user.setRole(requestedRole);
 		user.setPoints(0);
 
-		userRepository.save(user);
-		logger.info("User registered successfully with role {}: {}", requestedRole, user.getEmail());
+		User savedUser = userRepository.save(user);
+
+		// Collectors need a matching collectors-table row for assignment APIs
+		if ("COLLECTOR".equals(requestedRole)) {
+			Collector collector = new Collector();
+			collector.setName(savedUser.getName());
+			collector.setEmail(savedUser.getEmail());
+			collector.setContact("N/A");
+			collector.setVehicleNumber("N/A");
+			collectorRepository.save(collector);
+		}
+
+		logger.info("User registered successfully with role {}: {}", requestedRole, savedUser.getEmail());
 
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(Map.of("message", "User registered successfully", "userId", user.getUserId(), "role", requestedRole));
+			.body(Map.of("message", "User registered successfully", "userId", savedUser.getUserId(), "role", requestedRole));
 	}
 
 	@PostMapping("/login")

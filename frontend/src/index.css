@@ -250,4 +250,196 @@
   .animation-delay-4000 {
     animation-delay: 4s;
   }
+
+  /* ── Dark dashboard cards (all 3 roles) ── */
+  .dash-panel,
+  .dash-card,
+  .dash-kpi {
+    background: rgba(13, 35, 24, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(29, 158, 117, 0.22);
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .dash-panel {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  }
+
+  .dash-tab-bar {
+    background: rgba(13, 35, 24, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(29, 158, 117, 0.2);
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .dash-topbar {
+    background: rgba(13, 35, 24, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(29, 158, 117, 0.2);
+  }
+
+  .dash-btn-ghost {
+    background: rgba(13, 35, 24, 0.75);
+    border: 1px solid rgba(29, 158, 117, 0.25);
+    color: rgba(93, 202, 165, 0.9);
+  }
+
+  .dash-btn-ghost:hover {
+    background: rgba(29, 158, 117, 0.15);
+    color: #5dcaa5;
+  }
+
+  .dash-alert-warn {
+    background: rgba(186, 117, 23, 0.12);
+    border: 1px solid rgba(186, 117, 23, 0.35);
+    color: #e8c97a;
+  }
+
+  .dash-alert-info {
+    background: rgba(29, 158, 117, 0.1);
+    border: 1px solid rgba(29, 158, 117, 0.3);
+    color: #8fd4b8;
+  }
+
+  .dash-kpi-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(93, 202, 165, 0.85);
+  }
+
+  .dash-kpi-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #e8f5ef;
+  }
+
+  .dash-kpi-sub {
+    font-size: 0.75rem;
+    color: rgba(93, 202, 165, 0.55);
+  }
+
+  .dash-content h1,
+  .dash-content h2,
+  .dash-content h3,
+  .dash-content h4 {
+    color: #e8f5ef;
+  }
+
+  .dash-content .text-gray-900,
+  .dash-content .text-gray-800 {
+    color: #e8f5ef;
+  }
+
+  .dash-content .text-gray-700,
+  .dash-content .text-gray-600 {
+    color: rgba(93, 202, 165, 0.8);
+  }
+
+  .dash-content .text-gray-500,
+  .dash-content .text-gray-400 {
+    color: rgba(93, 202, 165, 0.55);
+  }
+
+  .dash-content thead,
+  .dash-content .bg-gray-50 {
+    background: rgba(7, 21, 16, 0.65) !important;
+    color: rgba(93, 202, 165, 0.75) !important;
+  }
+
+  .dash-content tbody tr {
+    border-color: rgba(29, 158, 117, 0.12);
+  }
+
+  .dash-content tbody tr:hover {
+    background: rgba(29, 158, 117, 0.08) !important;
+  }
+
+  .dash-content .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(29, 158, 117, 0.12);
+  }
+
+  .dash-content input,
+  .dash-content select,
+  .dash-content textarea {
+    background: rgba(7, 21, 16, 0.75);
+    border-color: rgba(29, 158, 117, 0.3);
+    color: #e8f5ef;
+  }
+
+  .dash-content input::placeholder,
+  .dash-content textarea::placeholder {
+    color: rgba(93, 202, 165, 0.4);
+  }
+
+  .dash-content .hover-lift:hover {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(29, 158, 117, 0.2);
+  }
+
+  /* List/table row hover — no white flash while scrolling */
+  .dash-row-hover {
+    transition: background-color 0.15s ease;
+  }
+
+  .dash-row-hover:hover {
+    background-color: rgba(29, 158, 117, 0.1) !important;
+  }
+
+  .dash-content .hover\:bg-gray-50:hover,
+  .dash-content .hover\:bg-gray-100:hover,
+  .dash-content .hover\:bg-gray-200:hover,
+  .dash-content .hover\:bg-emerald-50:hover,
+  .dash-content .hover\:bg-emerald-50\/50:hover,
+  .dash-content .hover\:bg-teal-50\/50:hover,
+  .dash-content .hover\:bg-orange-50:hover {
+    background-color: rgba(29, 158, 117, 0.1) !important;
+  }
+
+  .dash-content .bg-gray-50\/50,
+  .dash-content .bg-emerald-50\/50,
+  .dash-content .bg-gray-100 {
+    background-color: rgba(7, 21, 16, 0.5) !important;
+  }
+
+  .dash-content .border-gray-100,
+  .dash-content .border-gray-200 {
+    border-color: rgba(29, 158, 117, 0.15) !important;
+  }
+
+  .dash-content ::selection {
+    background: rgba(29, 158, 117, 0.45);
+    color: #e8f5ef;
+  }
+
+  .dash-content * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .dash-content ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .dash-content ::-webkit-scrollbar-track {
+    background: rgba(7, 21, 16, 0.45);
+    border-radius: 6px;
+  }
+
+  .dash-content ::-webkit-scrollbar-thumb {
+    background: rgba(29, 158, 117, 0.35);
+    border-radius: 6px;
+  }
+
+  .dash-content ::-webkit-scrollbar-thumb:hover {
+    background: rgba(29, 158, 117, 0.55);
+  }
+
+  .dash-content {
+    scrollbar-color: rgba(29, 158, 117, 0.35) rgba(7, 21, 16, 0.45);
+    scrollbar-width: thin;
+  }
 }

@@ -72,7 +72,7 @@ export default function WastePredictionChart({ token }) {
   }, [zoneId]);
 
   return (
-    <div className="rounded border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="dash-panel p-6">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
         Waste Quantity Prediction
       </h2>
@@ -129,7 +129,7 @@ export default function WastePredictionChart({ token }) {
             {predictions.slice(0, 5).map((pred) => (
               <div
                 key={pred.predictionId}
-                className="flex justify-between items-center p-3 bg-gray-50 rounded border border-gray-200"
+                className="flex justify-between items-center p-3 dash-card rounded border border-emerald-900/30"
               >
                 <div>
                   <div className="font-medium text-gray-800">

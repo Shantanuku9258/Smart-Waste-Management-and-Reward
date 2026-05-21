@@ -54,7 +54,7 @@ export default function EcoScoreDisplay({ userId, token }) {
 
   if (loading && !ecoScore) {
     return (
-      <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 shadow-lg">
+      <div className="dash-panel p-6 shadow-lg">
         <div className="text-center py-4">Loading eco score...</div>
       </div>
     );
@@ -62,7 +62,7 @@ export default function EcoScoreDisplay({ userId, token }) {
 
   if (error && !ecoScore) {
     return (
-      <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 shadow-lg">
+      <div className="dash-panel p-6 shadow-lg">
         <div className="text-yellow-800 text-sm bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-4">
           <p className="font-semibold">ML advisory service notice</p>
           <p>{error}</p>
@@ -90,7 +90,7 @@ export default function EcoScoreDisplay({ userId, token }) {
   };
 
   return (
-    <div className="rounded-2xl border border-white/50 bg-white/90 backdrop-blur-sm p-6 shadow-lg hover-lift">
+    <div className="dash-panel p-6 shadow-lg hover-lift">
       <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-heading-3 text-gray-900">Eco Score</h2>

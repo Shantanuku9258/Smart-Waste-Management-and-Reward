@@ -181,8 +181,7 @@ export default function UserDashboard() {
     .filter((r) => r.status === "COLLECTED")
     .reduce((sum, r) => sum + (r.weightKg || 0), 0);
 
-  const cardClass =
-    "bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-5 shadow-lg hover-lift transition-all";
+  const cardClass = "dash-panel p-5 hover-lift transition-all";
 
   return (
     <div className="space-y-6">
@@ -206,7 +205,7 @@ export default function UserDashboard() {
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 bg-white/70 backdrop-blur-sm rounded-2xl p-1.5 shadow border border-white/50 overflow-x-auto">
+      <div className="flex gap-1 dash-tab-bar p-1.5 overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab.key}
@@ -214,7 +213,7 @@ export default function UserDashboard() {
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
               activeTab === tab.key
                 ? "bg-emerald-600 text-white shadow-md"
-                : "text-gray-500 hover:text-gray-800 hover:bg-white/60"
+                : "text-emerald-400/70 hover:text-emerald-200 hover:bg-emerald-900/40"
             }`}
           >
             <span>{tab.icon}</span>
@@ -252,7 +251,7 @@ export default function UserDashboard() {
 
           {/* Active requests notice */}
           {(inProgress > 0 || pending > 0) && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+            <div className="dash-alert-warn rounded-2xl p-4 flex items-start gap-3">
               <ClockIcon className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-amber-800">Active Requests</p>
@@ -266,7 +265,7 @@ export default function UserDashboard() {
           )}
 
           {/* Recent 3 requests */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+          <div className="dash-panel shadow-lg">
             <div className="p-5 border-b border-gray-100 flex items-center justify-between">
               <h2 className="font-bold text-gray-900">Recent Requests</h2>
               <button onClick={() => setActiveTab("requests")} className="text-xs text-emerald-600 font-semibold hover:underline">
@@ -286,7 +285,7 @@ export default function UserDashboard() {
                 </div>
               ) : (
                 requests.slice(0, 3).map((r) => (
-                  <div key={r.requestId} className="px-5 py-4 flex items-center justify-between hover:bg-gray-50">
+                  <div key={r.requestId} className="px-5 py-4 flex items-center justify-between dash-row-hover">
                     <div>
                       <p className="text-sm font-semibold text-gray-900">#{r.requestId} · {r.wasteType}</p>
                       <p className="text-xs text-gray-500">{r.weightKg} kg · Zone {r.zoneId}</p>
@@ -320,13 +319,13 @@ export default function UserDashboard() {
           </div>
 
           {showForm && (
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg">
+            <div className="dash-panel p-6 shadow-lg">
               <h3 className="font-bold text-gray-900 mb-5 text-lg">Create New Pickup Request</h3>
               <RequestForm userId={user?.userId} token={token} onCreated={handleRequestCreated} />
             </div>
           )}
 
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+          <div className="dash-panel shadow-lg overflow-hidden">
             <div className="p-5 border-b border-gray-100 flex items-center gap-2">
               <ClipboardDocumentListIcon className="h-5 w-5 text-emerald-600" />
               <h3 className="font-bold text-gray-900">All Requests</h3>
@@ -338,7 +337,7 @@ export default function UserDashboard() {
             ) : (
               <div className="divide-y divide-gray-100">
                 {requests.map((r) => (
-                  <div key={r.requestId} className="px-5 py-4 hover:bg-gray-50">
+                  <div key={r.requestId} className="px-5 py-4 dash-row-hover">
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="font-semibold text-gray-900 text-sm">
@@ -385,7 +384,7 @@ export default function UserDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Reward Catalog */}
-            <div className="lg:col-span-2 bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+            <div className="lg:col-span-2 dash-panel shadow-lg">
               <div className="p-5 border-b border-gray-100">
                 <h3 className="font-bold text-gray-900">Available Rewards</h3>
                 <p className="text-xs text-gray-500 mt-0.5">Redeem your eco points for rewards</p>
@@ -400,7 +399,7 @@ export default function UserDashboard() {
                     return (
                       <div key={reward.rewardId}
                         className={`border rounded-xl p-4 flex items-start justify-between gap-3 transition ${
-                          canRedeem ? "border-emerald-200 bg-emerald-50/50" : "border-gray-200 bg-gray-50/50"
+                          canRedeem ? "border-emerald-700/40 bg-emerald-950/50" : "border-emerald-900/25 bg-emerald-950/30"
                         }`}>
                         <div className="flex-1">
                           <p className="font-semibold text-gray-900 text-sm">{reward.rewardName}</p>
@@ -424,7 +423,7 @@ export default function UserDashboard() {
             </div>
 
             {/* Redemption History */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg">
+            <div className="dash-panel shadow-lg">
               <div className="p-5 border-b border-gray-100">
                 <h3 className="font-bold text-gray-900">Redemption History</h3>
               </div>
@@ -452,7 +451,7 @@ export default function UserDashboard() {
           </div>
 
           {/* Transaction History */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+          <div className="dash-panel shadow-lg overflow-hidden">
             <div className="p-5 border-b border-gray-100">
               <h3 className="font-bold text-gray-900">Points Transaction History</h3>
             </div>
@@ -471,7 +470,7 @@ export default function UserDashboard() {
                     <tr><td colSpan={4} className="text-center text-gray-400 py-6">No transactions yet.</td></tr>
                   ) : (
                     transactions.map((tx) => (
-                      <tr key={tx.transactionId} className="hover:bg-gray-50">
+                      <tr key={tx.transactionId} className="dash-row-hover">
                         <td className="px-5 py-3 text-gray-500 text-xs">
                           {new Date(tx.createdAt).toLocaleDateString("en-IN")}
                         </td>
@@ -505,7 +504,7 @@ export default function UserDashboard() {
             <SparklesIcon className="h-6 w-6 text-emerald-600" />
             <h2 className="text-xl font-bold text-gray-900">My Eco Score</h2>
           </div>
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-sm text-blue-700 flex items-start gap-2">
+          <div className="dash-alert-info rounded-2xl p-4 text-sm flex items-start gap-2">
             <span className="text-base">ℹ️</span>
             <span>Eco Score is an <strong>advisory metric</strong> calculated by our ML service based on your waste disposal behaviour. It does not affect your rewards or request processing.</span>
           </div>
@@ -522,7 +521,7 @@ export default function UserDashboard() {
           </div>
 
           {/* Submit complaint */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg p-6">
+          <div className="dash-panel shadow-lg p-6">
             <h3 className="font-bold text-gray-900 mb-4">Submit a New Complaint</h3>
             <form onSubmit={handleComplaintSubmit} className="space-y-4">
               <div>
@@ -561,7 +560,7 @@ export default function UserDashboard() {
           </div>
 
           {/* My complaints list */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+          <div className="dash-panel shadow-lg overflow-hidden">
             <div className="p-5 border-b border-gray-100 flex items-center justify-between">
               <h3 className="font-bold text-gray-900">My Complaints</h3>
               <button onClick={loadComplaints} className="text-xs text-gray-500 hover:text-emerald-600 flex items-center gap-1">
@@ -575,7 +574,7 @@ export default function UserDashboard() {
             ) : (
               <div className="divide-y divide-gray-100">
                 {complaints.map((c) => (
-                  <div key={c.complaintId} className="px-5 py-4">
+                  <div key={c.complaintId} className="px-5 py-4 dash-row-hover">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <p className="text-sm text-gray-800">{c.message}</p>

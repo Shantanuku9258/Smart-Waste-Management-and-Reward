@@ -90,7 +90,7 @@ export default function AssignedRequests({ collectorId, token }) {
       {requests.map((request) => (
         <div
           key={request.requestId}
-          className="rounded border border-gray-200 bg-white p-4 shadow-sm"
+          className="dash-card rounded p-4"
         >
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div>

@@ -44,15 +44,9 @@ def load_models():
             models['ewaste_priority'] = joblib.load(os.path.join(MODELS_DIR, 'priority_model.pkl'))
             print("[OK] Loaded e-waste prediction models")
 
-        # Recycling Efficiency Score model
-        if os.path.exists(os.path.join(MODELS_DIR, 'recycling_efficiency_model.pkl')):
-            models['recycling_efficiency'] = joblib.load(os.path.join(MODELS_DIR, 'recycling_efficiency_model.pkl'))
-            print("[OK] Loaded recycling efficiency model")
-
-        # Growth Rate model
-        if os.path.exists(os.path.join(MODELS_DIR, 'growth_rate_model.pkl')):
-            models['growth_rate'] = joblib.load(os.path.join(MODELS_DIR, 'growth_rate_model.pkl'))
-            print("[OK] Loaded growth rate model")
+        if os.path.exists(os.path.join(MODELS_DIR, 'ewaste_collected_model.pkl')):
+            models['ewaste_collected'] = joblib.load(os.path.join(MODELS_DIR, 'ewaste_collected_model.pkl'))
+            print("[OK] Loaded e-waste collected model")
         
         print("All models loaded successfully!")
         return True
@@ -341,6 +335,56 @@ def calculate_eco_score():
     except Exception as e:
         return jsonify({'error': f'Eco score calculation failed: {str(e)}'}), 500
 
+_EWASTE_TRAINING_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'ewaste_training_data.csv')
+_default_collection_ratio_cache = None
+
+
+def _build_ewaste_input_df(data):
+    return pd.DataFrame([{
+        "state": data["state"].strip(),
+        "year": int(data["year"]),
+        "month": int(data["month"]),
+        "collection_centres": float(data["collection_centres"]),
+    }])
+
+
+def _default_collection_ratio():
+    """Mean collection_percentage / 100 from training data (2017–2024)."""
+    global _default_collection_ratio_cache
+    if _default_collection_ratio_cache is not None:
+        return _default_collection_ratio_cache
+    try:
+        if os.path.exists(_EWASTE_TRAINING_CSV):
+            df = pd.read_csv(_EWASTE_TRAINING_CSV, usecols=['collection_percentage'])
+            _default_collection_ratio_cache = float(df['collection_percentage'].mean() / 100.0)
+        else:
+            _default_collection_ratio_cache = 0.25
+    except Exception:
+        _default_collection_ratio_cache = 0.25
+    return _default_collection_ratio_cache
+
+
+def _compute_growth_rate_formula(data, current_generation):
+    """
+    Growth Rate (%) = ((current year generation - previous year generation)
+                       / previous year generation) × 100
+    Same state, month, and collection_centres; year must be > 2017.
+    """
+    year = int(data['year'])
+    if year <= 2017 or 'ewaste_generation' not in models:
+        return 0.0
+    prev_df = _build_ewaste_input_df({
+        "state": data["state"],
+        "year": year - 1,
+        "month": int(data["month"]),
+        "collection_centres": float(data["collection_centres"]),
+    })
+    prev_generation = float(models['ewaste_generation'].predict(prev_df)[0])
+    if prev_generation <= 0:
+        return 0.0
+    return round(((current_generation - prev_generation) / prev_generation) * 100, 2)
+
+
 def validate_ewaste_request(data):
     if not data:
         return 'Request body is required'
@@ -355,6 +399,8 @@ def validate_ewaste_request(data):
         
     try:
         year = int(data['year'])
+        if year < 2017 or year > 2024:
+            return 'year must be between 2017 and 2024 (dataset range)'
     except (ValueError, TypeError):
         return 'year must be numeric'
         
@@ -384,40 +430,37 @@ def predict_ewaste_generation():
                 
         if 'ewaste_generation' not in models:
             return jsonify({'error': 'E-waste generation model not loaded'}), 503
-            
-        # Create DataFrame for prediction
-        input_df = pd.DataFrame([{
-            "state": data["state"],
-            "year": int(data["year"]),
-            "month": int(data["month"]),
-            "collection_centres": float(data["collection_centres"])
-        }])
-        
-        prediction = models['ewaste_generation'].predict(input_df)[0]
 
-        # Recycling Efficiency Score: (estimated_collected / estimated_generation) × 100
+        input_df = _build_ewaste_input_df(data)
+        predicted_generation = round(float(models['ewaste_generation'].predict(input_df)[0]), 2)
+
+        # Estimated collected (ML advisory) — used in efficiency formula
+        predicted_collected = None
+        if 'ewaste_collected' in models:
+            predicted_collected = round(float(models['ewaste_collected'].predict(input_df)[0]), 2)
+            predicted_collected = max(0.0, predicted_collected)
+        elif predicted_generation > 0:
+            # Fallback: historical mean collection % from training data
+            predicted_collected = round(predicted_generation * _default_collection_ratio(), 2)
+
+        # Collection % & Recycling Efficiency = (collected / generated) × 100
+        collection_percentage = None
         recycling_efficiency = None
-        if 'recycling_efficiency' in models:
-            recycling_efficiency = round(float(
-                models['recycling_efficiency'].predict(input_df)[0]
-            ), 2)
-            # Clamp to valid percentage range
-            recycling_efficiency = max(0.0, min(100.0, recycling_efficiency))
+        if predicted_generation > 0 and predicted_collected is not None:
+            collection_percentage = round((predicted_collected / predicted_generation) * 100, 2)
+            recycling_efficiency = max(0.0, min(100.0, collection_percentage))
 
-        # Growth Rate: year-over-year change in generation (%)
-        growth_rate = None
-        if 'growth_rate' in models:
-            growth_rate = round(float(
-                models['growth_rate'].predict(input_df)[0]
-            ), 2)
+        # Growth Rate = ((current_gen - prev_year_gen) / prev_year_gen) × 100
+        growth_rate = _compute_growth_rate_formula(data, predicted_generation)
 
         response_data = {
-            'predictedGeneration': round(float(prediction), 2)
+            'predictedGeneration': predicted_generation,
+            'estimatedCollected': predicted_collected,
+            'collectionPercentage': collection_percentage,
+            'recyclingEfficiencyScore': recycling_efficiency,
+            'growthRate': growth_rate,
+            'collectionCentres': float(data['collection_centres']),
         }
-        if recycling_efficiency is not None:
-            response_data['recyclingEfficiencyScore'] = recycling_efficiency
-        if growth_rate is not None:
-            response_data['growthRate'] = growth_rate
 
         return jsonify(response_data), 200
 

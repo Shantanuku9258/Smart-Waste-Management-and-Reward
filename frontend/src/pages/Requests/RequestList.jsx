@@ -66,7 +66,7 @@ export default function RequestList({ userId, token, refreshKey, limit }) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="border border-gray-200/50 rounded-xl p-5 bg-white/50 backdrop-blur-sm">
+          <div key={i} className="dash-card rounded-xl p-5">
             <div className="skeleton h-6 w-32 mb-3 rounded"></div>
             <div className="skeleton h-4 w-full mb-2 rounded"></div>
             <div className="skeleton h-4 w-3/4 rounded"></div>
@@ -111,7 +111,7 @@ export default function RequestList({ userId, token, refreshKey, limit }) {
       {displayRequests.map((request, index) => (
         <div
           key={request.requestId}
-          className="border border-gray-200/50 rounded-xl p-5 hover:shadow-lg hover-lift transition-all duration-300 bg-white/50 backdrop-blur-sm"
+          className="dash-card rounded-xl p-5 hover:shadow-lg hover-lift transition-all duration-300"
           style={{ animationDelay: `${index * 0.1}s` }}
         >
           <div className="flex items-start justify-between mb-3">

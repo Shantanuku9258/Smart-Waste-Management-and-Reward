@@ -148,9 +148,8 @@ public class WasteRequestService {
 			});
 		}
 
-		// Set display status: UNASSIGNED if no collector, ASSIGNED if collector exists
-		WasteRequestStatus status = WasteRequestStatus.fromString(request.getStatus());
-		if (request.getCollectorId() == null || status == WasteRequestStatus.CREATED) {
+		// Display status is based on collector assignment only (not legacy PENDING status)
+		if (request.getCollectorId() == null) {
 			dto.setDisplayStatus("UNASSIGNED");
 		} else {
 			dto.setDisplayStatus("ASSIGNED");

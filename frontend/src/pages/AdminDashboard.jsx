@@ -55,10 +55,10 @@ function KPICard({ label, value, sub, color = "emerald" }) {
     red: "border-l-red-400",        yellow: "border-l-yellow-400",
   };
   return (
-    <div className={`bg-white rounded-2xl border border-white/50 shadow p-5 border-l-4 ${border[color]} hover-lift transition-all`}>
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{label}</p>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+    <div className={`dash-kpi p-5 border-l-4 ${border[color]} hover-lift transition-all`}>
+      <p className="dash-kpi-label mb-1">{label}</p>
+      <p className="dash-kpi-value">{value}</p>
+      {sub && <p className="dash-kpi-sub mt-1">{sub}</p>}
     </div>
   );
 }
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const unassignedReqs = requests.filter((r) => !r.collectorId || r.displayStatus === "UNASSIGNED");
+  const unassignedReqs = requests.filter((r) => !r.collectorId);
   const pendingRedemptions = redemptions.filter((r) => r.status === "REQUESTED");
 
   return (
@@ -258,19 +258,19 @@ export default function AdminDashboard() {
           <p className="text-gray-500 text-sm mt-1">Full system management · {user?.email}</p>
         </div>
         <button onClick={loadAll}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white/80 border border-gray-200 text-gray-600 text-sm rounded-xl hover:bg-white hover:text-emerald-600 transition font-semibold shadow-sm">
+          className="flex items-center gap-2 px-4 py-2.5 dash-btn-ghost text-sm rounded-xl transition font-semibold shadow-sm">
           <ArrowPathIcon className="h-4 w-4" /> Refresh All
         </button>
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 bg-white/70 backdrop-blur-sm rounded-2xl p-1.5 shadow border border-white/50 overflow-x-auto">
+      <div className="flex gap-1 dash-tab-bar p-1.5 overflow-x-auto">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           return (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
-                activeTab === tab.key ? "bg-gray-900 text-white shadow-md" : "text-gray-500 hover:text-gray-800 hover:bg-white/60"
+                activeTab === tab.key ? "bg-emerald-600 text-white shadow-md" : "text-emerald-400/70 hover:text-emerald-200 hover:bg-emerald-900/40"
               }`}>
               <Icon className="h-4 w-4" />{tab.label}
               {tab.key === "rewards" && pendingRedemptions.length > 0 && (
@@ -309,23 +309,23 @@ export default function AdminDashboard() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow p-5">
+                <div className="dash-panel shadow p-5">
                   <h3 className="font-bold text-gray-900 mb-4">Waste by Zone</h3>
                   <WasteByZoneChart data={wasteByZone} />
                 </div>
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow p-5">
+                <div className="dash-panel shadow p-5">
                   <h3 className="font-bold text-gray-900 mb-4">Waste by Type</h3>
                   <WasteByTypeChart data={wasteByType} />
                 </div>
               </div>
 
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow p-5">
+              <div className="dash-panel shadow p-5">
                 <h3 className="font-bold text-gray-900 mb-4">Top Eco Users</h3>
                 <TopEcoUsersTable users={topUsers} />
               </div>
 
               {/* Prediction vs Actual — ML Advisory (admin only, non-blocking) */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow p-5">
+              <div className="dash-panel shadow p-5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-bold text-gray-900">ML: Prediction vs Actual Waste</h3>
                   <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">Advisory</span>
@@ -340,12 +340,12 @@ export default function AdminDashboard() {
               </div>
 
               {/* Collector Performance */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow p-5">
+              <div className="dash-panel shadow p-5">
                 <h3 className="font-bold text-gray-900 mb-4">Collector Performance</h3>
                 <CollectorPerformanceTable data={collectorPerformance} loading={loading} />
               </div>
 
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow p-5">
+              <div className="dash-panel shadow p-5">
                 <h3 className="font-bold text-gray-900 mb-4">All Request Locations</h3>
                 <AdminRequestMap requests={requests} />
               </div>
@@ -361,11 +361,11 @@ export default function AdminDashboard() {
               </div>
 
               {unassignedReqs.length > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+                <div className="dash-alert-warn rounded-2xl p-4">
                   <p className="text-sm font-bold text-amber-800 mb-3">⚠ {unassignedReqs.length} Unassigned Request(s) — Need Collector Assignment</p>
                   <div className="space-y-3">
                     {unassignedReqs.slice(0, 5).map((req) => (
-                      <div key={req.requestId} className="bg-white rounded-xl border border-amber-200 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div key={req.requestId} className="dash-card rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3">
                         <div className="flex-1">
                           <p className="font-semibold text-gray-800 text-sm">#{req.requestId} — {req.wasteType} · {req.weightKg} kg</p>
                           <p className="text-xs text-gray-500">{req.userName || `User #${req.userId}`} · Zone {req.zoneId || req.zoneName}</p>
@@ -378,9 +378,9 @@ export default function AdminDashboard() {
                             className="text-xs border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-400 outline-none"
                           >
                             <option value="">Select Collector…</option>
-                            {collectors.filter(c => c.isActive).map((c) => (
+                            {collectors.filter(c => c.isActive !== false).map((c) => (
                               <option key={c.collectorId} value={c.collectorId}>
-                                {c.name} {c.zone?.zoneName ? `(${c.zone.zoneName})` : ""}
+                                {c.name} · {c.email} · #{c.collectorId}{c.zone?.zoneName ? ` · ${c.zone.zoneName}` : ""}
                               </option>
                             ))}
                           </select>
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+              <div className="dash-panel shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -418,7 +418,7 @@ export default function AdminDashboard() {
                         <tr><td colSpan={8} className="text-center text-gray-400 py-8">No requests found.</td></tr>
                       ) : (
                         requests.map((r) => (
-                          <tr key={r.requestId} className="hover:bg-gray-50">
+                          <tr key={r.requestId} className="dash-row-hover">
                             <td className="px-4 py-3 font-semibold text-gray-700">#{r.requestId}</td>
                             <td className="px-4 py-3 text-gray-700">{r.userName || `#${r.userId}`}</td>
                             <td className="px-4 py-3 text-gray-600">{r.collectorName || <span className="text-red-400 font-semibold">Unassigned</span>}</td>
@@ -446,7 +446,7 @@ export default function AdminDashboard() {
                 <h2 className="text-xl font-bold text-gray-900">All Users</h2>
                 <span className="text-sm text-gray-500">{users.length} registered</span>
               </div>
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+              <div className="dash-panel shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -464,7 +464,7 @@ export default function AdminDashboard() {
                         <tr><td colSpan={6} className="text-center text-gray-400 py-8">No users found.</td></tr>
                       ) : (
                         users.map((u) => (
-                          <tr key={u.userId} className="hover:bg-gray-50">
+                          <tr key={u.userId} className="dash-row-hover">
                             <td className="px-4 py-3 font-semibold text-gray-500">#{u.userId}</td>
                             <td className="px-4 py-3 font-semibold text-gray-800">{u.name}</td>
                             <td className="px-4 py-3 text-gray-600">{u.email}</td>
@@ -502,7 +502,7 @@ export default function AdminDashboard() {
               </div>
 
               {showCreateCollector && (
-                <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg p-6">
+                <div className="dash-panel shadow-lg p-6">
                   <h3 className="font-bold text-gray-900 mb-5">Create New Collector Account</h3>
                   <form onSubmit={handleCreateCollector} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
@@ -538,7 +538,7 @@ export default function AdminDashboard() {
                         {creatingCollector ? "Creating…" : "Create Collector"}
                       </button>
                       <button type="button" onClick={() => setShowCreateCollector(false)}
-                        className="px-6 py-2.5 border border-gray-300 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 transition">
+                        className="px-6 py-2.5 dash-btn-ghost text-sm font-semibold rounded-xl transition">
                         Cancel
                       </button>
                     </div>
@@ -546,7 +546,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+              <div className="dash-panel shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -566,7 +566,7 @@ export default function AdminDashboard() {
                         <tr><td colSpan={8} className="text-center text-gray-400 py-8">No collectors found.</td></tr>
                       ) : (
                         collectors.map((c) => (
-                          <tr key={c.collectorId} className="hover:bg-gray-50">
+                          <tr key={c.collectorId} className="dash-row-hover">
                             <td className="px-4 py-3 text-gray-500 font-semibold">#{c.collectorId}</td>
                             <td className="px-4 py-3 font-semibold text-gray-800">{c.name}</td>
                             <td className="px-4 py-3 text-gray-600">{c.email}</td>
@@ -601,7 +601,7 @@ export default function AdminDashboard() {
                   <span className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full font-bold">{redemptions.filter(r=>r.status==="FULFILLED").length} Fulfilled</span>
                 </div>
               </div>
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+              <div className="dash-panel shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -620,7 +620,7 @@ export default function AdminDashboard() {
                         <tr><td colSpan={7} className="text-center text-gray-400 py-8">No redemptions.</td></tr>
                       ) : (
                         redemptions.map((r) => (
-                          <tr key={r.redemptionId} className="hover:bg-gray-50">
+                          <tr key={r.redemptionId} className="dash-row-hover">
                             <td className="px-4 py-3 font-semibold text-gray-500">#{r.redemptionId}</td>
                             <td className="px-4 py-3 text-gray-700">{r.userName || `#${r.userId}`}</td>
                             <td className="px-4 py-3 text-gray-700">{r.rewardName}</td>
@@ -667,7 +667,7 @@ export default function AdminDashboard() {
                   <span className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full font-bold">{complaints.filter(c=>c.status==="RESOLVED").length} Resolved</span>
                 </div>
               </div>
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+              <div className="dash-panel shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -685,7 +685,7 @@ export default function AdminDashboard() {
                         <tr><td colSpan={6} className="text-center text-gray-400 py-8">No complaints.</td></tr>
                       ) : (
                         complaints.map((c) => (
-                          <tr key={c.complaintId} className="hover:bg-gray-50">
+                          <tr key={c.complaintId} className="dash-row-hover">
                             <td className="px-4 py-3 font-semibold text-gray-500">#{c.complaintId}</td>
                             <td className="px-4 py-3 text-gray-700">{c.user?.name || `#${c.user?.userId}`}</td>
                             <td className="px-4 py-3 text-gray-500">
@@ -723,11 +723,11 @@ export default function AdminDashboard() {
                 <span className="text-sm text-gray-500">(Pending &gt; 48 hrs without progress)</span>
               </div>
               {delayedRequests.length > 0 && (
-                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-sm text-orange-700">
+                <div className="dash-alert-warn rounded-2xl p-4 text-sm">
                   ⚠ {delayedRequests.length} request(s) have been in an early stage for more than 48 hours. These are flagged for your attention only — no automatic action is taken.
                 </div>
               )}
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 shadow-lg overflow-hidden">
+              <div className="dash-panel shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
@@ -750,7 +750,7 @@ export default function AdminDashboard() {
                             ? Math.floor((Date.now() - new Date(r.createdAt)) / 3600000)
                             : null;
                           return (
-                            <tr key={r.requestId} className="hover:bg-orange-50">
+                            <tr key={r.requestId} className="dash-row-hover">
                               <td className="px-4 py-3 font-semibold text-orange-700">#{r.requestId}</td>
                               <td className="px-4 py-3 text-gray-700">{`#${r.userId}`}</td>
                               <td className="px-4 py-3 text-gray-600">{r.collectorId ? `#${r.collectorId}` : <span className="text-red-400">Unassigned</span>}</td>
@@ -804,7 +804,7 @@ export default function AdminDashboard() {
                     icon: "🚛",
                   },
                 ].map((r) => (
-                  <div key={r.type} className={`bg-white/90 backdrop-blur-sm rounded-2xl border shadow-lg p-6 border-l-4 ${
+                  <div key={r.type} className={`dash-panel p-6 border-l-4 ${
                     r.color === "emerald" ? "border-l-emerald-500" : r.color === "blue" ? "border-l-blue-500" : "border-l-orange-400"
                   }`}>
                     <div className="text-3xl mb-3">{r.icon}</div>
@@ -826,7 +826,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-sm text-blue-700">
+              <div className="dash-alert-info rounded-2xl p-4 text-sm">
                 <strong>Note:</strong> Reports are generated in real-time from the database. Large datasets may take a few seconds. Rate limiting applies (max 5 downloads per minute per IP).
               </div>
             </div>

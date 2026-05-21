@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import AnimatedBackground from "../components/AnimatedBackground";
 import {
   HomeIcon,
   ChartBarIcon,
@@ -89,21 +90,13 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
-      <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
-        style={{ backgroundImage: "url(/dashboard-background.png)" }}
-      />
-      <div className="fixed inset-0 bg-black/30 -z-10" />
+      <AnimatedBackground />
 
       {/* ===== SIDEBAR ===== */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-black shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{
-          background: "linear-gradient(180deg, #111827 0%, #1a1a1a 100%)",
-        }}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -184,32 +177,32 @@ export default function DashboardLayout({ children }) {
       {/* ===== MAIN AREA ===== */}
       <div className="lg:pl-64">
         {/* Topbar */}
-        <header className="bg-white/85 backdrop-blur-md shadow-sm border-b border-gray-200/50 sticky top-0 z-30">
+        <header className="dash-topbar sticky top-0 z-30 shadow-sm">
           <div className="flex items-center justify-between h-14 px-4 sm:px-6">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-gray-500 hover:text-gray-700">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-emerald-400/80 hover:text-emerald-300">
               <Bars3Icon className="h-6 w-6" />
             </button>
             <div className="flex items-center gap-4 ml-auto">
-              <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-                <span className="font-semibold text-gray-800">{user?.name}</span>
-                <span className="text-gray-300">|</span>
+              <div className="hidden sm:flex items-center gap-2 text-sm text-emerald-200/80">
+                <span className="font-semibold text-emerald-50">{user?.name}</span>
+                <span className="text-emerald-700">|</span>
                 <span className={`font-bold text-xs uppercase ${roleBadgeColor}`}>{user?.role}</span>
                 {user?.role === "USER" && (
                   <>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-emerald-700 font-bold">{user?.points ?? 0} pts</span>
+                    <span className="text-emerald-700">|</span>
+                    <span className="text-emerald-400 font-bold">{user?.points ?? 0} pts</span>
                   </>
                 )}
               </div>
-              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition">
-                <BellIcon className="h-4 w-4 text-gray-500" />
+              <div className="w-8 h-8 rounded-full bg-emerald-950/80 border border-emerald-800/40 flex items-center justify-center cursor-pointer hover:bg-emerald-900/50 transition">
+                <BellIcon className="h-4 w-4 text-emerald-400/80" />
               </div>
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="p-4 sm:p-6 lg:p-8 min-h-screen page-transition relative z-10">
+        <main className="dash-content p-4 sm:p-6 lg:p-8 min-h-screen page-transition relative z-10">
           {children}
         </main>
       </div>

@@ -56,6 +56,21 @@ def build_models():
     gen_model_path = os.path.join(models_dir, 'ewaste_generation_model.pkl')
     joblib.dump(gen_model, gen_model_path)
     print(f"Saved to {gen_model_path}")
+
+    print("\n--- Training E-Waste Collected Model (Regression) ---")
+    y_col = df['estimated_collected']
+    X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X, y_col, test_size=0.2, random_state=42)
+    col_model = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('regressor', RandomForestRegressor(n_estimators=100, random_state=42))
+    ])
+    col_model.fit(X_train_c, y_train_c)
+    y_pred_col = col_model.predict(X_test_c)
+    print(f"RMSE: {np.sqrt(mean_squared_error(y_test_c, y_pred_col)):.2f}")
+    print(f"R2 Score: {r2_score(y_test_c, y_pred_col):.4f}")
+    col_model_path = os.path.join(models_dir, 'ewaste_collected_model.pkl')
+    joblib.dump(col_model, col_model_path)
+    print(f"Saved to {col_model_path}")
     
     print("\n--- Training Collection Demand Model (Classification) ---")
     y_demand = df['demand_level']
@@ -111,55 +126,13 @@ def build_models():
     joblib.dump(priority_model, priority_model_path)
     print(f"Saved to {priority_model_path}")
     
-    # ── RECYCLING EFFICIENCY SCORE MODEL ──────────────────────────────────────
-    # Regression: predict recycling_efficiency_score (0-100%)
-    # Formula: (estimated_collected / estimated_generation) × 100
+    # Recycling efficiency & growth rate are computed at inference using formulas:
+    #   efficiency = (collected / generated) × 100
+    #   growth_rate = ((gen_y - gen_y-1) / gen_y-1) × 100
     if 'recycling_efficiency_score' in df.columns:
-        print("\n--- Training Recycling Efficiency Score Model (Regression) ---")
-        y_eff = df['recycling_efficiency_score']
-
-        X_train_e, X_test_e, y_train_e, y_test_e = train_test_split(X, y_eff, test_size=0.2, random_state=42)
-
-        eff_model = Pipeline(steps=[
-            ('preprocessor', preprocessor),
-            ('regressor', RandomForestRegressor(n_estimators=100, random_state=42))
-        ])
-        eff_model.fit(X_train_e, y_train_e)
-        y_pred_e = eff_model.predict(X_test_e)
-        rmse_e = np.sqrt(mean_squared_error(y_test_e, y_pred_e))
-        r2_e   = r2_score(y_test_e, y_pred_e)
-        print(f"RMSE: {rmse_e:.4f}  |  R2 Score: {r2_e:.4f}")
-
-        eff_path = os.path.join(models_dir, 'recycling_efficiency_model.pkl')
-        joblib.dump(eff_model, eff_path)
-        print(f"Saved to {eff_path}")
-    else:
-        print("\n[SKIP] recycling_efficiency_score column not found — re-run data_pipeline.py first.")
-
-    # ── GROWTH RATE MODEL ─────────────────────────────────────────────────────
-    # Regression: predict year-over-year growth_rate (%)
-    # Formula: ((curr_gen - prev_year_gen) / prev_year_gen) × 100
-    if 'growth_rate' in df.columns:
-        print("\n--- Training Growth Rate Model (Regression) ---")
-        y_gr = df['growth_rate']
-
-        X_train_g, X_test_g, y_train_g, y_test_g = train_test_split(X, y_gr, test_size=0.2, random_state=42)
-
-        gr_model = Pipeline(steps=[
-            ('preprocessor', preprocessor),
-            ('regressor', RandomForestRegressor(n_estimators=100, random_state=42))
-        ])
-        gr_model.fit(X_train_g, y_train_g)
-        y_pred_g = gr_model.predict(X_test_g)
-        rmse_g = np.sqrt(mean_squared_error(y_test_g, y_pred_g))
-        r2_g   = r2_score(y_test_g, y_pred_g)
-        print(f"RMSE: {rmse_g:.4f}  |  R2 Score: {r2_g:.4f}")
-
-        gr_path = os.path.join(models_dir, 'growth_rate_model.pkl')
-        joblib.dump(gr_model, gr_path)
-        print(f"Saved to {gr_path}")
-    else:
-        print("\n[SKIP] growth_rate column not found — re-run data_pipeline.py first.")
+        eff_check = (df['estimated_collected'] / df['estimated_generation'].replace(0, np.nan) * 100).round(2)
+        print(f"\nRecycling efficiency formula check (mean abs diff): "
+              f"{(eff_check - df['recycling_efficiency_score']).abs().mean():.4f}")
 
     print("\nAll e-waste models trained successfully!")
 

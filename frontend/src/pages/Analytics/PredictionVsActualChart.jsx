@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 export default function PredictionVsActualChart({ data, loading }) {
   if (loading) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg hover-lift">
+      <div className="dash-panel p-6 shadow-lg hover-lift">
         <div className="text-center py-8 text-gray-500">Loading chart...</div>
       </div>
     );
@@ -11,7 +11,7 @@ export default function PredictionVsActualChart({ data, loading }) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg hover-lift">
+      <div className="dash-panel p-6 shadow-lg hover-lift">
         <h3 className="text-heading-3 text-gray-900 mb-4">ML Prediction vs Actual</h3>
         <div className="text-center py-8 text-gray-500">No data available</div>
       </div>
@@ -26,7 +26,7 @@ export default function PredictionVsActualChart({ data, loading }) {
   }));
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/50 p-6 shadow-lg hover-lift">
+    <div className="dash-panel p-6 shadow-lg hover-lift">
       <h3 className="text-heading-3 text-gray-900 mb-4">ML Prediction vs Actual Waste</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>

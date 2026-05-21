@@ -64,11 +64,13 @@ export default function EWastePredictor() {
       const priRes    = await predictEwastePriority(formData, token);
 
       setResults({
-        generation:              genRes.data.predictedGeneration,
+        generation:               genRes.data.predictedGeneration,
+        estimatedCollected:       genRes.data.estimatedCollected ?? null,
+        collectionPercentage:     genRes.data.collectionPercentage ?? null,
         recyclingEfficiencyScore: genRes.data.recyclingEfficiencyScore ?? null,
-        growthRate:              genRes.data.growthRate ?? null,
-        demand:                  demandRes.data.demandLevel,
-        priority:                priRes.data.priorityLevel,
+        growthRate:               genRes.data.growthRate ?? null,
+        demand:                   demandRes.data.demandLevel,
+        priority:                 priRes.data.priorityLevel,
       });
       toast.success("E-waste predictions generated!");
     } catch (err) {
@@ -151,18 +153,47 @@ export default function EWastePredictor() {
       {/* Results */}
       {results && (
         <div className="space-y-3">
-          {/* Row 1: Generation + Recycling Efficiency + Growth Rate */}
+          {/* Row 1: Generation, Collected, Collection % */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
               <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-1">
-                Predicted Generation
+                Estimated Generation
               </p>
               <p className="text-2xl font-bold text-emerald-900">
                 {Number(results.generation).toFixed(2)}
                 <span className="text-sm font-normal ml-1">kg</span>
               </p>
-              <p className="text-xs text-emerald-600 mt-1">Estimated e-waste generated</p>
+              <p className="text-xs text-emerald-600 mt-1">Amount of e-waste generated</p>
             </div>
+
+            <div className="p-4 bg-teal-50 rounded-xl border border-teal-200">
+              <p className="text-xs font-semibold text-teal-700 uppercase tracking-wide mb-1">
+                Estimated Collected
+              </p>
+              <p className="text-2xl font-bold text-teal-900">
+                {results.estimatedCollected !== null
+                  ? Number(results.estimatedCollected).toFixed(2)
+                  : "—"}
+                <span className="text-sm font-normal ml-1">kg</span>
+              </p>
+              <p className="text-xs text-teal-600 mt-1">Amount collected / recycled</p>
+            </div>
+
+            <div className="p-4 bg-cyan-50 rounded-xl border border-cyan-200">
+              <p className="text-xs font-semibold text-cyan-700 uppercase tracking-wide mb-1">
+                Collection Percentage
+              </p>
+              <p className="text-2xl font-bold text-cyan-900">
+                {results.collectionPercentage !== null
+                  ? `${results.collectionPercentage.toFixed(1)}%`
+                  : "—"}
+              </p>
+              <p className="text-xs text-cyan-600 mt-1">Operational efficiency</p>
+            </div>
+          </div>
+
+          {/* Row 2: Recycling Efficiency + Growth Rate */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
             <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
               <p className="text-xs font-semibold text-purple-700 uppercase tracking-wide mb-1">
@@ -204,12 +235,12 @@ export default function EWastePredictor() {
                   </p>
                 </>
               ) : (
-                <p className="text-sm text-gray-400 mt-1">Model not available — run train_models.py</p>
+                <p className="text-sm text-gray-400 mt-1">Requires generation & collected values</p>
               )}
             </div>
           </div>
 
-          {/* Row 2: Demand Level + Priority Level */}
+          {/* Row 3: Demand Level + Priority Level */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className={`p-4 rounded-xl border ${demandStyle.bg} ${demandStyle.border}`}>
               <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${demandStyle.text}`}>
@@ -248,12 +279,14 @@ export default function EWastePredictor() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                <tr><td className="py-1.5 font-medium text-gray-700">Predicted Generation</td><td>{Number(results.generation).toFixed(2)} kg</td><td className="text-gray-500">Amount of e-waste generated</td></tr>
-                <tr><td className="py-1.5 font-medium text-gray-700">Recycling Efficiency</td><td>{results.recyclingEfficiencyScore !== null ? `${results.recyclingEfficiencyScore.toFixed(1)}%` : "—"}</td><td className="text-gray-500">Waste management performance</td></tr>
+                <tr><td className="py-1.5 font-medium text-gray-700">Collection Centres</td><td>{formData.collectionCentres}</td><td className="text-gray-500">Infrastructure availability</td></tr>
+                <tr><td className="py-1.5 font-medium text-gray-700">Estimated Generation</td><td>{Number(results.generation).toFixed(2)} kg</td><td className="text-gray-500">Amount of e-waste generated</td></tr>
+                <tr><td className="py-1.5 font-medium text-gray-700">Estimated Collected</td><td>{results.estimatedCollected !== null ? `${Number(results.estimatedCollected).toFixed(2)} kg` : "—"}</td><td className="text-gray-500">Amount collected / recycled</td></tr>
+                <tr><td className="py-1.5 font-medium text-gray-700">Collection Percentage</td><td>{results.collectionPercentage !== null ? `${results.collectionPercentage.toFixed(1)}%` : "—"}</td><td className="text-gray-500">Operational efficiency</td></tr>
+                <tr><td className="py-1.5 font-medium text-gray-700">Recycling Efficiency Score</td><td>{results.recyclingEfficiencyScore !== null ? `${results.recyclingEfficiencyScore.toFixed(1)}%` : "—"}</td><td className="text-gray-500">(collected ÷ generated) × 100</td></tr>
                 <tr><td className="py-1.5 font-medium text-gray-700">Growth Rate</td><td>{results.growthRate !== null ? `${results.growthRate >= 0 ? "+" : ""}${results.growthRate.toFixed(2)}%` : "—"}</td><td className="text-gray-500">Trend analysis & forecasting</td></tr>
                 <tr><td className="py-1.5 font-medium text-gray-700">Demand Level</td><td>{results.demand}</td><td className="text-gray-500">Waste demand category</td></tr>
                 <tr><td className="py-1.5 font-medium text-gray-700">Priority Level</td><td>{results.priority}</td><td className="text-gray-500">Administrative attention category</td></tr>
-                <tr><td className="py-1.5 font-medium text-gray-700">Collection Centres</td><td>{formData.collectionCentres}</td><td className="text-gray-500">Infrastructure availability</td></tr>
               </tbody>
             </table>
           </div>

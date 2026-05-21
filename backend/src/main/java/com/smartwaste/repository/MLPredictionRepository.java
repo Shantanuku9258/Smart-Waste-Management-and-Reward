@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface MLPredictionRepository extends JpaRepository<MLPrediction, Long> {
 	List<MLPrediction> findByZoneIdOrderByPredictionDateDesc(Long zoneId);
 	List<MLPrediction> findByZoneId(Long zoneId);
-	Optional<MLPrediction> findByStateAndYearAndMonth(String state, Integer year, Integer month);
+	Optional<MLPrediction> findFirstByStateAndYearAndMonthOrderByPredictionDateDesc(
+		String state, Integer year, Integer month);
 }
 

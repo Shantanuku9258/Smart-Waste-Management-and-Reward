@@ -109,7 +109,7 @@ export function AdminRequestMap({ requests }) {
 	}, [requests]);
 
 	return (
-		<div className="border border-white/50 rounded-2xl bg-white/90 backdrop-blur-sm shadow-lg hover-lift">
+		<div className="dash-panel hover-lift">
 			<div className="p-5 border-b border-gray-200/50 flex items-center justify-between bg-gradient-to-r from-emerald-50/50 to-teal-50/50 rounded-t-2xl">
 				<div>
 					<h3 className="text-lg font-bold text-gray-900">Waste Requests Map</h3>
@@ -129,7 +129,7 @@ export function AdminRequestMap({ requests }) {
 				) : (
 					<div
 						ref={mapRef}
-						className="w-full rounded-xl border border-gray-200/50 shadow-inner overflow-hidden bg-white"
+						className="w-full rounded-xl border border-emerald-900/40 shadow-inner overflow-hidden bg-emerald-950/50"
 						style={{ height: 320, minHeight: 320 }}
 					/>
 				)}
@@ -209,7 +209,7 @@ export function CollectorRequestMap({ requests }) {
 	}, [request]);
 
 	return (
-		<div className="border border-white/50 rounded-2xl bg-white/90 backdrop-blur-sm shadow-lg hover-lift">
+		<div className="dash-panel hover-lift">
 			<div className="p-5 border-b border-gray-200/50 flex items-center justify-between bg-gradient-to-r from-emerald-50/50 to-teal-50/50 rounded-t-2xl">
 				<div>
 					<h3 className="text-lg font-bold text-gray-900">Assigned Pickup Map</h3>

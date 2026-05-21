@@ -68,6 +68,11 @@ public class DemoDataInitializer {
 				"User@123",
 				"USER"
 			);
+
+			// Backfill collector profiles for any COLLECTOR user missing one
+			userRepository.findAll().stream()
+				.filter(u -> "COLLECTOR".equals(u.getRole()))
+				.forEach(u -> createCollectorProfileIfMissing(collectorRepository, zoneRepository, u));
 		};
 	}
 

@@ -49,68 +49,99 @@ export default function Login() {
   };
 
   return (
-    /* ── Full-page purple gradient background ── */
     <div
       className="min-h-screen relative overflow-hidden flex items-center justify-center p-4"
-      style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}
+      style={{
+        background: "linear-gradient(160deg, #071510 0%, #0d2318 45%, #0a1a10 100%)",
+      }}
     >
-      {/* ── Animated floating blobs ── */}
+      {/* Floating accents — match dashboard teal palette */}
       <div
-        className="animate-float absolute rounded-full opacity-10 bg-white pointer-events-none"
-        style={{ width: 300, height: 300, top: -50, left: -50 }}
+        className="animate-float absolute rounded-full pointer-events-none"
+        style={{ width: 300, height: 300, top: -50, left: -50, background: "rgba(29,158,117,0.12)" }}
       />
       <div
-        className="animate-float-2 absolute rounded-full opacity-10 bg-white pointer-events-none"
-        style={{ width: 200, height: 200, bottom: -30, right: "5%" }}
+        className="animate-float-2 absolute rounded-full pointer-events-none"
+        style={{ width: 200, height: 200, bottom: -30, right: "5%", background: "rgba(93,202,165,0.1)" }}
       />
       <div
-        className="animate-float-4 absolute rounded-full opacity-10 bg-white pointer-events-none"
-        style={{ width: 250, height: 250, top: "50%", right: -50 }}
+        className="animate-float-4 absolute rounded-full pointer-events-none"
+        style={{ width: 250, height: 250, top: "50%", right: -50, background: "rgba(29,158,117,0.08)" }}
       />
 
-      {/* ── Centered card ── */}
       <div
-        className="animate-slideUp relative z-10 bg-white rounded-2xl shadow-2xl overflow-hidden w-full"
-        style={{ maxWidth: 900, display: "grid", gridTemplateColumns: "1fr 1fr" }}
+        className="animate-slideUp relative z-10 rounded-2xl shadow-2xl overflow-hidden w-full"
+        style={{
+          maxWidth: 900,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          background: "rgba(13, 35, 24, 0.92)",
+          border: "1px solid rgba(29, 158, 117, 0.25)",
+          boxShadow: "0 20px 50px rgba(0, 0, 0, 0.45)",
+        }}
       >
-        {/* ────────── LEFT: Form ────────── */}
+        {/* LEFT: Form */}
         <div className="p-10 flex flex-col justify-center">
-          {/* Header */}
           <div className="mb-8">
             <h1
-              className="text-4xl font-bold text-gray-900 mb-2"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-4xl font-bold mb-2"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#e8f5ef" }}
             >
               Welcome Back
             </h1>
-            <p className="text-gray-500 text-sm">Manage your waste collection efficiently</p>
+            <p className="text-sm" style={{ color: "rgba(93, 202, 165, 0.75)" }}>
+              Manage your waste collection efficiently
+            </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-2">Email Address</label>
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: "rgba(93, 202, 165, 0.9)" }}
+              >
+                Email Address
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none transition-all duration-300 focus:border-emerald-500"
-                style={{ fontFamily: "'Poppins', sans-serif" }}
+                className="login-input w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-300"
+                style={{
+                  fontFamily: "'Poppins', sans-serif",
+                  background: "rgba(7, 21, 16, 0.75)",
+                  border: "1px solid rgba(29, 158, 117, 0.35)",
+                  color: "#e8f5ef",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#1d9e75")}
+                onBlur={(e) => (e.target.style.borderColor = "rgba(29, 158, 117, 0.35)")}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-2">Password</label>
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: "rgba(93, 202, 165, 0.9)" }}
+              >
+                Password
+              </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none transition-all duration-300 focus:border-emerald-500"
-                style={{ fontFamily: "'Poppins', sans-serif" }}
+                className="login-input w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-300"
+                style={{
+                  fontFamily: "'Poppins', sans-serif",
+                  background: "rgba(7, 21, 16, 0.75)",
+                  border: "1px solid rgba(29, 158, 117, 0.35)",
+                  color: "#e8f5ef",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#1d9e75")}
+                onBlur={(e) => (e.target.style.borderColor = "rgba(29, 158, 117, 0.35)")}
               />
             </div>
 
@@ -119,8 +150,8 @@ export default function Login() {
               disabled={loading}
               className="w-full py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
               style={{
-                background: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
-                boxShadow: loading ? "none" : "0 10px 25px rgba(16,185,129,0.3)",
+                background: "linear-gradient(135deg, #1d9e75 0%, #0d6b4f 100%)",
+                boxShadow: loading ? "none" : "0 10px 25px rgba(29, 158, 117, 0.35)",
               }}
               onMouseEnter={(e) => !loading && (e.currentTarget.style.transform = "translateY(-2px)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
@@ -137,28 +168,38 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Register links */}
-          <div className="mt-6 space-y-2 text-center text-sm text-gray-500">
+          <div className="mt-6 space-y-2 text-center text-sm" style={{ color: "rgba(93, 202, 165, 0.65)" }}>
             <p>
               New here?{" "}
-              <button onClick={() => navigate("/register?role=USER")}
-                className="text-emerald-600 hover:text-emerald-700 font-semibold transition">
+              <button
+                onClick={() => navigate("/register?role=USER")}
+                className="font-semibold transition hover:underline"
+                style={{ color: "#5dcaa5" }}
+              >
                 Register as User
               </button>
               {" "}·{" "}
-              <button onClick={() => navigate("/register?role=COLLECTOR")}
-                className="text-orange-600 hover:text-orange-700 font-semibold transition">
+              <button
+                onClick={() => navigate("/register?role=COLLECTOR")}
+                className="font-semibold transition hover:underline"
+                style={{ color: "#BA7517" }}
+              >
                 Register as Collector
               </button>
             </p>
-            <p className="text-xs text-gray-400 italic">Admin accounts are created directly in the database.</p>
+            <p className="text-xs italic" style={{ color: "rgba(93, 202, 165, 0.45)" }}>
+              Admin accounts are created directly in the database.
+            </p>
           </div>
         </div>
 
-        {/* ────────── RIGHT: Visual panel ────────── */}
+        {/* RIGHT: Visual panel */}
         <div
           className="p-10 flex flex-col justify-center items-center text-white"
-          style={{ background: "linear-gradient(135deg, #10B981 0%, #3B82F6 100%)" }}
+          style={{
+            background: "linear-gradient(160deg, #0a1f14 0%, #1d9e75 55%, #0d4a38 100%)",
+            borderLeft: "1px solid rgba(29, 158, 117, 0.2)",
+          }}
         >
           {/* Bouncing leaf icon */}
           <div className="animate-bounceY text-7xl mb-5 select-none">🌿</div>
@@ -172,9 +213,9 @@ export default function Login() {
           <div
             className="w-full rounded-xl p-4 text-sm"
             style={{
-              background: "rgba(255,255,255,0.12)",
+              background: "rgba(7, 21, 16, 0.45)",
               backdropFilter: "blur(10px)",
-              border: "1px solid rgba(255,255,255,0.2)",
+              border: "1px solid rgba(93, 202, 165, 0.25)",
             }}
           >
             <p className="font-semibold mb-3 text-white/90">Demo Accounts (click to fill):</p>
@@ -185,9 +226,9 @@ export default function Login() {
                   type="button"
                   onClick={() => fillDemo(acc)}
                   className="w-full text-left px-3 py-2 rounded-lg transition-all text-xs font-medium text-white/95"
-                  style={{ background: "rgba(255,255,255,0.1)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
+                  style={{ background: "rgba(29, 158, 117, 0.15)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(29, 158, 117, 0.28)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(29, 158, 117, 0.15)")}
                 >
                   <span className="mr-2">{acc.emoji}</span>
                   <span className="font-bold">{acc.role}:</span>{" "}
@@ -202,6 +243,7 @@ export default function Login() {
 
       {/* ── Responsive: hide right panel on small screens ── */}
       <style>{`
+        .login-input::placeholder { color: rgba(93, 202, 165, 0.4); }
         @media (max-width: 640px) {
           .animate-slideUp > div:last-child { display: none; }
           .animate-slideUp { grid-template-columns: 1fr !important; }
